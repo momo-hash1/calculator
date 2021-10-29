@@ -1,55 +1,73 @@
 let calculator = {
-  preValue: "",
   operator: "",
-  pastValue: "",
+  value: "",
+  operationStack: [],
   calculate() {
-    calculator.preValue = parseInt(calculator.preValue);
-    calculator.pastValue = parseInt(calculator.pastValue);
+    calculator.value = parseInt(calculator.value);
     let result = "";
-    switch (calculator.operator) {
-      case "+":
-        result = (calculator.preValue + calculator.pastValue).toString();
-        break;
-      case "-":
-        result = (calculator.preValue - calculator.pastValue).toString();
-        break;
-      case "/":
-        result = (calculator.preValue / calculator.pastValue).toString();
-        break;
-      case "*":
-        result = (calculator.preValue * calculator.pastValue).toString();
-        break;
-    }
+    calculator.operationStack.forEach((element) => {
+      switch (calculator.operator) {
+        case "+":
+          result = (calculator.preValue + calculator.pastValue).toString();
+          break;
+        case "-":
+          result = (calculator.preValue - calculator.pastValue).toString();
+          break;
+        case "/":
+          result = (calculator.preValue / calculator.pastValue).toString();
+          break;
+        case "*":
+          result = (calculator.preValue * calculator.pastValue).toString();
+          break;
+      }
+    });
     calculator.clear();
-    calculator.preValue = result;
+    calculator.operationStack = [];
+    calculator.value = result;
+  },
+  parse() {
+    
   },
   removeValueByValue() {
-    if (!calculator.pastValue) {
-      calculator.operator = "";
+    if (calculator.operationStack.length === 0) {
+      calculator.clear();
+    } else {
+      calculator.operationStack.shift();
     }
-
-    let handleValue = calculator.operator ? "pastValue" : "preValue";
-    calculator[handleValue] = calculator[handleValue].slice(0, -1);
   },
   clear() {
-    calculator.preValue = "";
-    calculator.pastValue = "";
+    calculator.value = "";
     calculator.operator = "";
-    calculator.result = "";
   },
 };
 
 const updateInput = (callback) => {
   callback();
-  let stringView = `${calculator.preValue} ${calculator.operator} ${calculator.pastValue}`;
-  stringView = stringView.length >= 17 ? stringView.slice(-17) : stringView;
+
+  let stringView = "";
+  calculator.operationStack.forEach((element) => {
+    stringView += element;
+  });
   document.querySelector("#inputNumber").textContent = stringView;
+
+  let currentView = `${calculator.operator} ${calculator.value}`;
+  currentView = currentView.length >= 10 ? currentView.slice(-10) : currentView;
+  document.querySelector("#current_number").textContent = currentView;
+};
+
+const inputHandler = (callback, _class) => {
+  document.querySelectorAll(_class).forEach((el) => {
+    el.addEventListener("click", (event) => {
+      callback(event);
+    });
+  });
 };
 
 const clearHandler = () => {
   const clearBtn = document.querySelector("#clear");
-  clearBtn.addEventListener("click", () => {
+  clearBtn.addEventListener("click", (e) => {
     updateInput(calculator.removeValueByValue);
+    e.preventDefault();
   });
 
   clearBtn.addEventListener("mousedown", () => {
@@ -58,44 +76,37 @@ const clearHandler = () => {
       clearTimeout(timeout);
     });
     timeout = setTimeout(() => {
-      updateInput(calculator.clear)
+      updateInput(() => {
+        calculator.operationStack = [];
+        calculator.clear();
+      });
     }, 500);
   });
 };
 
-const numberBtnHandler = () => {
-  document.querySelectorAll(".number_button").forEach((el) => {
-    el.addEventListener("click", (event) => {
-      event.preventDefault;
-      updateInput(() => {
-        calculator[calculator.operator ? "pastValue" : "preValue"] +=
-          event.target.dataset.number;
-      });
-    });
+const numberBtnHandler = (event) => {
+  event.preventDefault;
+
+  updateInput(() => {
+    calculator.value += event.target.dataset.number;
   });
 };
 
 const resultBtnHandler = () => {
-  document.querySelectorAll(".result_button").forEach((el) => {
-    el.addEventListener("click", (event) => {
-      updateInput(calculator.calculate);
-    });
+  updateInput(calculator.calculate);
+};
+
+const operatorBtnHandler = (event) => {
+  updateInput(() => {
+    if (calculator.value) {
+      calculator.operationStack.push(calculator.operator, calculator.value);
+      calculator.clear();
+    }
+    calculator.operator = event.target.dataset.operator;
   });
 };
 
-const operatorBtnHandler = () => {
-  document.querySelectorAll(".operator_button").forEach((el) => {
-    el.addEventListener("click", (event) => {
-      updateInput(() => {
-        if (calculator.preValue) {
-          calculator.operator = event.target.dataset.operator;
-        }
-      });
-    });
-  });
-};
-
-resultBtnHandler();
+inputHandler(resultBtnHandler, ".result_button");
 clearHandler();
-operatorBtnHandler();
-numberBtnHandler();
+inputHandler(operatorBtnHandler, ".operation_buttons");
+inputHandler(numberBtnHandler, ".number_buttons");

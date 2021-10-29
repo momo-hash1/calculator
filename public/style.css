@@ -114,9 +114,14 @@ button:active{
 
 #input_numbers{
     border: 2px solid #212112;
-    padding: 10px;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+
+#input_numbers > #inputNumber{
+    opacity: 0.5;
 }
 
 #input_numbers p{
