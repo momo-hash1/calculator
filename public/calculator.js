@@ -1,32 +1,53 @@
+let operations = {
+  "+": { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
+  "-": { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
+  "*": { operation: (operand1, operand2) => operand1 * operand2, order: 3 },
+  "/": { operation: (operand1, operand2) => operand1 / operand2, order: 3 },
+};
+
+let parser = {
+  getHighestOperator(operationStack) {
+    let highestOperatorOrder = 0;
+    let hightestOperator = {};
+    operationStack.forEach((element, index) => {
+      if (operations[element] !== undefined) {
+        if (highestOperatorOrder < operations[element].order) {
+          hightestOperator = { operator: element, index: index };
+          highestOperatorOrder = operations[element].order;
+        }
+      }
+    });
+    return hightestOperator;
+  },
+};
+
 let calculator = {
   operator: "",
   value: "",
   operationStack: [],
   calculate() {
-    calculator.value = parseInt(calculator.value);
-    let result = "";
-    calculator.operationStack.forEach((element) => {
-      switch (calculator.operator) {
-        case "+":
-          result = (calculator.preValue + calculator.pastValue).toString();
-          break;
-        case "-":
-          result = (calculator.preValue - calculator.pastValue).toString();
-          break;
-        case "/":
-          result = (calculator.preValue / calculator.pastValue).toString();
-          break;
-        case "*":
-          result = (calculator.preValue * calculator.pastValue).toString();
-          break;
-      }
-    });
     calculator.clear();
+    calculator.operationStack.shift();
+    while (Object.keys(parser.getHighestOperator(calculator.operationStack)).length !== 0) {
+      let highestOperator = parser.getHighestOperator(
+        calculator.operationStack
+      );
+
+      let operand1 = parseFloat(
+        calculator.operationStack[highestOperator.index - 1]
+      );
+      let operand2 = parseFloat(
+        calculator.operationStack[highestOperator.index + 1]
+      );
+
+      calculator.operationStack.splice(highestOperator.index - 1, 2);
+      calculator.operationStack[highestOperator.index - 1] = operations[
+        highestOperator.operator
+      ].operation(operand1, operand2);
+    }
+    calculator.value = calculator.operationStack[0];
     calculator.operationStack = [];
-    calculator.value = result;
-  },
-  parse() {
-    
+
   },
   removeValueByValue() {
     if (calculator.operationStack.length === 0) {
@@ -88,12 +109,19 @@ const numberBtnHandler = (event) => {
   event.preventDefault;
 
   updateInput(() => {
-    calculator.value += event.target.dataset.number;
+    if (event.target.dataset.number) {
+      calculator.value += event.target.dataset.number;
+    }
   });
 };
 
 const resultBtnHandler = () => {
-  updateInput(calculator.calculate);
+  updateInput(() => {
+    calculator.operationStack.push(calculator.operator, calculator.value);
+    calculator.clear();
+
+    calculator.calculate();
+  });
 };
 
 const operatorBtnHandler = (event) => {
