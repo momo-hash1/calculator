@@ -1,132 +1,163 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
 
 body {
-    font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 
-.buttons_wrapper{
-    display: flex;
-    justify-content: center;
+.buttons_wrapper {
+  display: flex;
+  justify-content: center;
 }
 
-.buttons{
-    display: flex;
-    flex-direction: column;
-    width: 20%;
+.buttons {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-@media (max-width: 1400px){
-    .buttons{
-        width: 30%;
-    }
+@media (max-width: 1400px) {
+  .buttons {
+    width: 30%;
+  }
 }
 
-@media (max-width: 1000px){
-    .buttons{
-        width: 50%;
-    }
+@media (max-width: 1000px) {
+  .buttons {
+    width: 50%;
+  }
 }
 
-@media (max-width: 800px){
-    .buttons{
-        width: 65%;
-    }
+@media (max-width: 800px) {
+  .buttons {
+    width: 65%;
+  }
 }
 
-@media (max-width: 500px){
-    .buttons{
-        width: 90%;
-    }
+@media (max-width: 500px) {
+  .buttons {
+    width: 90%;
+  }
 }
 
-
-.number_buttons{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 100px);
-    padding-top: 10px;
+.number_buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 100px);
+  padding-top: 10px;
 }
 
-.number_buttons:nth-child(9){
-    position: absolute;
-    top: 0;
+.number_buttons:nth-child(9) {
+  position: absolute;
+  top: 0;
 }
 
 button {
-    display: block;
-    cursor: pointer;
-    background-color: #212112;
-    color: #fff;
-    border: none;
-    outline: none;
+  display: block;
+  cursor: pointer;
+  background-color: #212112;
+  color: #fff;
+  border: none;
+  outline: none;
 }
 
-button:hover{
-    background-color: #4d4d4d;
+button:hover {
+  background-color: #4d4d4d;
 }
 
-button:active{
-    background-color: #4d4d4d;
+button:active {
+  background-color: #4d4d4d;
 }
 
-
-.operation_buttons{
-    display: flex;
-    flex: 1;
-    margin: -10px;
-    margin-top: 5px;
+.operation_buttons {
+  display: flex;
+  flex: 1;
+  margin: -10px;
+  margin-top: 5px;
 }
 
-.operation_buttons *{
-    width: 100%;
-    height: 50px;
-    margin: 10px;
+.operation_buttons * {
+  width: 100%;
+  height: 50px;
+  margin: 10px;
 }
 
-.result_button{
-    width: 50%;
-    height: 50px;
+.result_button {
+  width: 50%;
+  height: 50px;
 }
 
 .result {
-    display: flex;
-    height: 60px;
-    margin-bottom: 10px;
+  display: flex;
+  height: 60px;
+  margin-bottom: 10px;
 }
 
-.result button{
-    margin-left: 10px;
-    width: 100%;
+.result button {
+  margin-left: 10px;
+  width: 100%;
 }
 
-.result div{
-    min-width: 75%;
-    overflow-wrap: break-word;
+.result div {
+  min-width: 75%;
+  overflow-wrap: break-word;
 }
 
-.misc_buttons{
-    margin-top: 10px;
-    display: flex;
+.misc_buttons {
+  margin-top: 10px;
+  display: flex;
 }
 
-.null{
-    width: 50%;
+.null {
+  width: 50%;
 }
 
-#input_numbers{
-    border: 2px solid #212112;
-    display: flex;
-    align-items: flex-end;
-    overflow-x: scroll;
-    white-space: nowrap;
+#input_numbers {
+  border: 2px solid #212112;
+  display: flex;
+  align-items: flex-end;
+  overflow-x: scroll;
+  white-space: nowrap;
 }
 
-#input_numbers > #inputNumber{
-    opacity: 0.5;
+#input_numbers > #inputNumber {
+  opacity: 0.5;
 }
 
-#input_numbers p{
-    margin: 0;
-    font-size: 30px;
-    font-weight: bold;
+#input_numbers p {
+  margin: 0;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+section {
+  display: flex;
+  width: 60%;
+}
+
+section > div {
+  width: 40%;
+}
+section > aside {
+  width: 30%;
+}
+
+aside > ul {
+    cursor: pointer;
+    list-style-type: none;
+    margin-block-start:0;
+    margin-block-end: 0;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    line-height: 30px;
+    padding-inline-start: 0;
+    margin-right: 10px;
+}
+
+aside > ul > li{
+    padding: 10px;
+}
+
+.active-side{
+    background-color: #4d4d4d;
+    color: #fff;
 }

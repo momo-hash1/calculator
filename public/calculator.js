@@ -1,3 +1,5 @@
+// TODO fix sqrt
+
 let operations = {
   "+": { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
   "-": { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
@@ -6,7 +8,7 @@ let operations = {
   "^": { operation: (operand1) => operand1 ** 2, order: 4 },
   sqrt: {
     operation: (operand1, operand2) => {
-      Math.sqrt(operand2);
+      return Math.sqrt(operand2);
     },
     order: 4,
     unary: true,
@@ -43,8 +45,6 @@ let calculator = {
       let highestOperator = parser.getHighestOperator(
         calculator.operationStack
       );
-
-      console.log(highestOperator);
 
       let operand1 = parseFloat(
         calculator.operationStack[highestOperator.index - 1]
@@ -129,6 +129,7 @@ const numberBtnHandler = (event) => {
 const resultBtnHandler = () => {
   updateInput(() => {
     calculator.operationStack.push(calculator.operator, calculator.value);
+    console.log(calculator.operationStack);
     calculator.clear();
 
     calculator.calculate();
@@ -145,7 +146,22 @@ const operatorBtnHandler = (event) => {
   });
 };
 
+const selectView = () => {
+  const calcSideItem = document.querySelectorAll(".calc-side-item");
+  calcSideItem.forEach((element) => {
+    element.addEventListener("click", (event) => {
+      event.target.classList.toggle("active-side");
+      calcSideItem.forEach((element) => {
+        if (element !== event.target) {
+          element.classList.remove("active-side");
+        }
+      });
+    });
+  });
+};
+
 inputHandler(resultBtnHandler, ".result_button");
 clearHandler();
 inputHandler(operatorBtnHandler, ".operation_buttons");
 inputHandler(numberBtnHandler, ".number_buttons");
+selectView();
