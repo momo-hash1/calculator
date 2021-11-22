@@ -150,10 +150,10 @@ const selectView = () => {
   const calcSideItem = document.querySelectorAll(".calc-side-item");
   calcSideItem.forEach((element) => {
     element.addEventListener("click", (event) => {
-      event.target.classList.toggle("active-side");
+      element.classList.replace("btn-light", "btn-primary");
       calcSideItem.forEach((element) => {
         if (element !== event.target) {
-          element.classList.remove("active-side");
+          element.classList.replace("btn-primary", "btn-light");
         }
       });
     });
@@ -163,5 +163,5 @@ const selectView = () => {
 inputHandler(resultBtnHandler, ".result_button");
 clearHandler();
 inputHandler(operatorBtnHandler, ".operation_buttons");
-inputHandler(numberBtnHandler, ".number_buttons");
+inputHandler(numberBtnHandler, ".number_button");
 selectView();
