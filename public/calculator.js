@@ -73,107 +73,15 @@ let calculator = {
   },
 };
 
-const initSwitcher = () => {
-  setSelectedView('calculator')
-  switcher("calculator");
-};
+const renderGraph = () => {
+  const canvas = document.querySelector("#graphview-canvas");
+  const ctx = canvas.getContext("2d");
 
-const switcher = (type) => {
-  const htmlTemplates = {
-    calculator: `
+  canvas.setAttribute("width", document.querySelector(".switch").clientWidth);
+  canvas.setAttribute("height", 400);
 
-  <div class="row operation_buttons my-2">
-    <div class="col">
-      <button
-        data-operator="+"
-        class="operator_button btn btn-outline-secondary"
-        class="col"
-      >
-        +
-      </button>
-      <button
-        data-operator="-"
-        class="operator_button btn btn-outline-secondary"
-        class="col"
-      >
-        -
-      </button>
-      <button
-        data-operator="/"
-        class="operator_button btn btn-outline-secondary"
-        class="col"
-      >
-        /
-      </button>
-      <button
-        data-operator="*"
-        class="operator_button btn btn-outline-secondary"
-        class="col"
-      >
-        *
-      </button>
-      <button
-        data-operator="^"
-        class="operator_button btn btn-outline-secondary"
-        class="col"
-      >
-        ^
-      </button>
-      <button
-        data-operator="sqrt"
-        class="operator_button btn btn-outline-secondary"
-        class="col"
-      >
-        sqrt
-      </button>
-    </div>
-  </div>
-  <div class="d-flex">
-    <button data-number="1" class="number_button btn btn-outline-secondary">
-      1
-    </button>
-    <button data-number="2" class="number_button btn btn-outline-secondary">
-      2
-    </button>
-    <button data-number="3" class="number_button btn btn-outline-secondary">
-      3
-    </button>
-  </div>
-  <div class="d-flex">
-    <button data-number="4" class="number_button btn btn-outline-secondary">
-      4
-    </button>
-    <button data-number="5" class="number_button btn btn-outline-secondary">
-      5
-    </button>
-    <button data-number="6" class="number_button btn btn-outline-secondary">
-      6
-    </button>
-  </div>
-  <div class="d-flex">
-    <button data-number="7" class="number_button btn btn-outline-secondary">
-      7
-    </button>
-    <button data-number="8" class="number_button btn btn-outline-secondary">
-      8
-    </button>
-    <button data-number="9" class="number_button btn btn-outline-secondary">
-      9
-    </button>
-  </div>
-  <div class="d-flex justify-content-center align-items-center">
-    <button class="number_button btn btn-outline-secondary" data-number="0">
-      0
-    </button>
-    <button class="result_button btn btn-outline-secondary">=</button>
-  </div>
-    `,
-    graph: `
-    <canvas id="graphview-canvas"></canvas>
-    `,
-  };
-
-  document.querySelector(".switch").innerHTML = htmlTemplates[type];
+  ctx.fillRect(0, 0, 40, 50);
+  requestAnimationFrame(renderGraph);
 };
 
 const updateInput = (callback) => {
@@ -266,14 +174,23 @@ const selectView = () => {
   calcSideItem.forEach((element) => {
     element.addEventListener("click", (event) => {
       setSelectedView(event.target.dataset.view);
-      switcher(event.target.dataset.view)
     });
   });
 };
 
-initSwitcher();
-inputHandler(resultBtnHandler, ".result_button");
-clearHandler();
-inputHandler(operatorBtnHandler, ".operation_buttons");
-inputHandler(numberBtnHandler, ".number_button");
-selectView();
+const btnHandlers = () => {
+  inputHandler(resultBtnHandler, ".result_button");
+  clearHandler();
+  inputHandler(operatorBtnHandler, ".operation_buttons");
+  inputHandler(numberBtnHandler, ".number_button");
+};
+
+const initSwither = () => {
+  selectView()
+  setSelectedView('calculator')
+}
+
+const init = () => {
+  btnHandlers();
+  initSwitcher()
+}

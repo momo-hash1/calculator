@@ -16,3 +16,7 @@
     height: 80px;
 
 }
+.switch{
+    max-height: 400px;
+    overflow: hidden;
+}
