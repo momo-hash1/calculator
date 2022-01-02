@@ -1,4 +1,5 @@
 // TODO fix sqrt
+// TODO fix animation
 
 let operations = {
   "+": { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
@@ -64,7 +65,15 @@ let calculator = {
     if (calculator.operationStack.length === 0) {
       calculator.clear();
     } else {
-      calculator.operationStack.shift();
+      if (calculator.value) {
+        calculator.value = calculator.value.slice(0, -1);
+      } else {
+        if (calculator.operator) {
+          calculator.operator = calculator.operator.slice(0, -1);
+        } else {
+          calculator.operationStack.pop();
+        }
+      }
     }
   },
   clear() {
@@ -76,11 +85,13 @@ let calculator = {
 const renderGraph = () => {
   const canvas = document.querySelector("#graphview-canvas");
   const ctx = canvas.getContext("2d");
+  if (!switcher.animation) {
+    canvas.setAttribute("width", document.querySelector(".switch").clientWidth);
+    canvas.setAttribute("height", 400);
+  
+    ctx.fillRect(0, 0, 40, 50);
+  }
 
-  canvas.setAttribute("width", document.querySelector(".switch").clientWidth);
-  canvas.setAttribute("height", 400);
-
-  ctx.fillRect(0, 0, 40, 50);
   requestAnimationFrame(renderGraph);
 };
 
@@ -140,7 +151,6 @@ const numberBtnHandler = (event) => {
 const resultBtnHandler = () => {
   updateInput(() => {
     calculator.operationStack.push(calculator.operator, calculator.value);
-    console.log(calculator.operationStack);
     calculator.clear();
 
     calculator.calculate();
@@ -157,26 +167,51 @@ const operatorBtnHandler = (event) => {
   });
 };
 
-const setSelectedView = (view) => {
-  const calcSideItem = document.querySelectorAll(".calc-side-item");
-
-  calcSideItem.forEach((element) => {
-    if (element.dataset.view === view) {
-      element.classList.replace("btn-light", "btn-primary");
-    } else {
-      element.classList.replace("btn-primary", "btn-light");
-    }
-  });
-};
-
-const selectView = () => {
-  const calcSideItem = document.querySelectorAll(".calc-side-item");
-  calcSideItem.forEach((element) => {
-    element.addEventListener("click", (event) => {
-      setSelectedView(event.target.dataset.view);
+const switcher = {
+  pos: 0,
+  animation: false,
+  calcSideItem: document.querySelectorAll(".calc-side-item"),
+  setSelectedView(view){
+    const prev = [...this.calcSideItem].filter((item) => item.classList.contains('btn-primary'))
+    this.calcSideItem.forEach((element) => {
+        if (element.dataset.view === view ) {
+          this.changeView(this.calculateDistance(prev[0].dataset.view, element.dataset.view))
+          element.classList.replace("btn-light", "btn-primary");
+        } else {
+          element.classList.replace("btn-primary", "btn-light");
+        }
     });
-  });
-};
+  },
+  init(){
+    this.calcSideItem.forEach((element) => {
+      element.addEventListener("click", (event) => {
+        this.setSelectedView(event.target.dataset.view);
+      });
+    });
+    this.calcSideItem[0].classList.replace("btn-light", "btn-primary")
+  },
+  calculateDistance(prev, current) {
+    let tabViews = [...this.calcSideItem]
+    tabViews = tabViews.map((el) => el.dataset.view)
+    let distance = [...tabViews].splice(tabViews.indexOf(current), 1).length 
+    distance *= tabViews.indexOf(current) >= tabViews.indexOf(prev) ?  -1 : 1
+    return distance * 400
+  },
+  changeView(distance){
+    const _switch = document.querySelector('.wrapper')
+    let currentScroll = 0
+    const animateChangingView = () => {
+      if (currentScroll !== Math.abs(distance)) {
+         currentScroll += 20
+        if (distance < 0) {this.pos -=  20}else{ this.pos +=  20}
+      }
+      _switch.style.transform = `translateY(${this.pos}px)`
+        requestAnimationFrame(animateChangingView)
+    }
+    animateChangingView()
+    // renderGraph()
+  }
+}
 
 const btnHandlers = () => {
   inputHandler(resultBtnHandler, ".result_button");
@@ -185,12 +220,9 @@ const btnHandlers = () => {
   inputHandler(numberBtnHandler, ".number_button");
 };
 
-const initSwither = () => {
-  selectView()
-  setSelectedView('calculator')
+const init = () => {
+  switcher.init()
+  btnHandlers();
 }
 
-const init = () => {
-  btnHandlers();
-  initSwitcher()
-}
+init()
