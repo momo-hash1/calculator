@@ -1,5 +1,4 @@
 // TODO fix sqrt
-// TODO fix animation
 
 let operations = {
   "+": { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
@@ -88,8 +87,14 @@ const renderGraph = () => {
   if (!switcher.animation) {
     canvas.setAttribute("width", document.querySelector(".switch").clientWidth);
     canvas.setAttribute("height", 400);
-  
-    ctx.fillRect(0, 0, 40, 50);
+    ctx.beginPath()
+    ctx.moveTo(0,400 / 2)
+    ctx.lineTo(document.querySelector(".switch").clientWidth, 400 / 2)
+
+    ctx.moveTo(document.querySelector(".switch").clientWidth/ 2, 0)
+    ctx.lineTo(document.querySelector(".switch").clientWidth/ 2, 400)
+    
+    ctx.stroke()
   }
 
   requestAnimationFrame(renderGraph);
@@ -185,6 +190,7 @@ const switcher = {
   init(){
     this.calcSideItem.forEach((element) => {
       element.addEventListener("click", (event) => {
+        this.animation = true
         this.setSelectedView(event.target.dataset.view);
       });
     });
@@ -201,15 +207,19 @@ const switcher = {
     const _switch = document.querySelector('.wrapper')
     let currentScroll = 0
     const animateChangingView = () => {
-      if (currentScroll !== Math.abs(distance)) {
+      // TODO fix animation
+
+      if (currentScroll !== Math.abs(distance) && Math.abs(this.pos) < this.calcSideItem.length * 400) {
          currentScroll += 20
         if (distance < 0) {this.pos -=  20}else{ this.pos +=  20}
+      }else{
+        this.animation = false
       }
       _switch.style.transform = `translateY(${this.pos}px)`
         requestAnimationFrame(animateChangingView)
     }
     animateChangingView()
-    // renderGraph()
+    renderGraph()
   }
 }
 
