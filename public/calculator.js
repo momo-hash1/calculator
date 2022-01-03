@@ -81,24 +81,50 @@ let calculator = {
   },
 };
 
-const renderGraph = () => {
-  const canvas = document.querySelector("#graphview-canvas");
-  const ctx = canvas.getContext("2d");
-  if (!switcher.animation) {
-    canvas.setAttribute("width", document.querySelector(".switch").clientWidth);
-    canvas.setAttribute("height", 400);
-    ctx.beginPath()
-    ctx.moveTo(0,400 / 2)
-    ctx.lineTo(document.querySelector(".switch").clientWidth, 400 / 2)
-
-    ctx.moveTo(document.querySelector(".switch").clientWidth/ 2, 0)
-    ctx.lineTo(document.querySelector(".switch").clientWidth/ 2, 400)
+const graph = {
+  y: document.querySelector(".switch").clientWidth,
+  x: document.querySelector(".switch").clientWidth / 2,
+  canvas: document.querySelector("#graphview-canvas"),
+  pressed: false,
+  ctx: '',
+  init() {
+    this.canvas.setAttribute('width', document.querySelector('.switch').clientWidth)
+    this.canvas.setAttribute('height', 400)
+    this.render = this.render.bind(this)
+    this.render()
+    this.move()
+  },
+  render() {
+    const ctx = graph.canvas.getContext('2d')
     
+    ctx.clearRect(0, 0, document.querySelector('.switch').clientWidth, 400)
+    ctx.beginPath()
+    ctx.moveTo(0, graph.y)
+    ctx.lineTo(document.querySelector('.switch').clientWidth, graph.y)
+  
+    ctx.moveTo(graph.x, 0)
+    ctx.lineTo(graph.x, 400)
+  
     ctx.stroke()
-  }
+    
+    requestAnimationFrame(this.render)
+  },
+  move() {
+    let prev_x = 0
+    let prev_y = 0
 
-  requestAnimationFrame(renderGraph);
-};
+    this.canvas.addEventListener('mousedown', (e) => {
+      prev_x = e.offsetX
+      prev_y = e.offsetY
+
+    })
+    this.canvas.addEventListener('mouseup', (e) => {
+      this.x += e.offsetX - prev_x
+      this.y += e.offsetY - prev_y
+    })
+
+  }
+}
 
 const updateInput = (callback) => {
   callback();
@@ -176,18 +202,18 @@ const switcher = {
   pos: 0,
   animation: false,
   calcSideItem: document.querySelectorAll(".calc-side-item"),
-  setSelectedView(view){
+  setSelectedView(view) {
     const prev = [...this.calcSideItem].filter((item) => item.classList.contains('btn-primary'))
     this.calcSideItem.forEach((element) => {
-        if (element.dataset.view === view ) {
-          this.changeView(this.calculateDistance(prev[0].dataset.view, element.dataset.view))
-          element.classList.replace("btn-light", "btn-primary");
-        } else {
-          element.classList.replace("btn-primary", "btn-light");
-        }
+      if (element.dataset.view === view) {
+        this.changeView(this.calculateDistance(prev[0].dataset.view, element.dataset.view))
+        element.classList.replace("btn-light", "btn-primary");
+      } else {
+        element.classList.replace("btn-primary", "btn-light");
+      }
     });
   },
-  init(){
+  init() {
     this.calcSideItem.forEach((element) => {
       element.addEventListener("click", (event) => {
         this.animation = true
@@ -199,27 +225,26 @@ const switcher = {
   calculateDistance(prev, current) {
     let tabViews = [...this.calcSideItem]
     tabViews = tabViews.map((el) => el.dataset.view)
-    let distance = [...tabViews].splice(tabViews.indexOf(current), 1).length 
-    distance *= tabViews.indexOf(current) >= tabViews.indexOf(prev) ?  -1 : 1
+    let distance = [...tabViews].splice(tabViews.indexOf(current), 1).length
+    distance *= tabViews.indexOf(current) >= tabViews.indexOf(prev) ? -1 : 1
     return distance * 400
   },
-  changeView(distance){
+  changeView(distance) {
     const _switch = document.querySelector('.wrapper')
     let currentScroll = 0
     const animateChangingView = () => {
       // TODO fix animation
 
       if (currentScroll !== Math.abs(distance) && Math.abs(this.pos) < this.calcSideItem.length * 400) {
-         currentScroll += 20
-        if (distance < 0) {this.pos -=  20}else{ this.pos +=  20}
-      }else{
+        currentScroll += 20
+        if (distance < 0) { this.pos -= 20 } else { this.pos += 20 }
+      } else {
         this.animation = false
       }
       _switch.style.transform = `translateY(${this.pos}px)`
-        requestAnimationFrame(animateChangingView)
+      requestAnimationFrame(animateChangingView)
     }
     animateChangingView()
-    renderGraph()
   }
 }
 
@@ -232,6 +257,7 @@ const btnHandlers = () => {
 
 const init = () => {
   switcher.init()
+  graph.init()
   btnHandlers();
 }
 
