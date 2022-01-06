@@ -1,5 +1,6 @@
 // TODO fix sqrt
 
+
 let operations = {
   "+": { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
   "-": { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
@@ -38,13 +39,10 @@ let calculator = {
     calculator.operationStack.shift();
     let nullFounded = false;
     while (
-      Object.keys(getHighestOperator(calculator.operationStack))
-        .length !== 0 &&
+      Object.keys(getHighestOperator(calculator.operationStack)).length !== 0 &&
       !nullFounded
     ) {
-      let highestOperator = getHighestOperator(
-        calculator.operationStack
-      );
+      let highestOperator = getHighestOperator(calculator.operationStack);
 
       let operand1 = parseFloat(
         calculator.operationStack[highestOperator.index - 1]
@@ -52,7 +50,7 @@ let calculator = {
       let operand2 = parseFloat(
         calculator.operationStack[highestOperator.index + 1]
       );
-      
+
       if (operand1 === 0 || operand2 === 0) {
         this.operationStack[0] = null;
         nullFounded = true;
@@ -97,8 +95,8 @@ const graph = {
   y: 400 / 2,
   x: document.querySelector(".switch").clientWidth / 2,
   canvas: document.querySelector("#graphview-canvas"),
-  currentExp: [],
-  scale: 0,
+  currentExp: ["", "1", "/", "x"],
+  scale: 100,
   ctx: "",
   init() {
     this.canvas.setAttribute(
@@ -137,7 +135,12 @@ const graph = {
         calculator.calculate();
         if (calculator.value !== null) {
           ctx.beginPath();
-          ctx.rect(this.x - calc_x , this.y - calculator.value * this.scale,0.5, 0.5);
+          ctx.rect(
+            this.x - calc_x,
+            this.y - calculator.value * this.scale,
+            0.5,
+            0.5
+          );
           ctx.stroke();
         }
       }
@@ -154,14 +157,16 @@ const graph = {
     this.canvas.addEventListener("mouseup", (e) => {
       this.x += e.offsetX - prev_x;
       this.y += e.offsetY - prev_y;
+      logPos()
       this.plot_axes();
       this.drawGraph();
     });
-    this.canvas.addEventListener('wheel', (event) => {
-      this.scale += event.deltaY
-      this.plot_axes()
-      this.drawGraph()
-    })
+    this.canvas.addEventListener("wheel", (event) => {
+      this.scale += event.deltaY;
+      logPos()
+      this.plot_axes();
+      this.drawGraph();
+    });
   },
 };
 
@@ -222,9 +227,9 @@ const resultBtnHandler = () => {
   updateInput(() => {
     calculator.operationStack.push(calculator.operator, calculator.value);
     calculator.clear();
-    if (calculator.operationStack.includes('x')) {
+    if (calculator.operationStack.includes("x")) {
       graph.currentExp = calculator.operationStack.slice();
-    }else{
+    } else {
       calculator.calculate();
     }
   });
@@ -316,3 +321,6 @@ const init = () => {
 };
 
 init();
+
+const debug = true
+const logPos = () => console.log(`x=${graph.x}y=${graph.y}scale=${graph.scale}`) && debug === true;
