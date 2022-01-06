@@ -54,7 +54,6 @@ let calculator = {
       );
       
       if (operand1 === 0 || operand2 === 0) {
-        console.log('ad');
         this.operationStack[0] = null;
         nullFounded = true;
       } else {
@@ -99,6 +98,7 @@ const graph = {
   x: document.querySelector(".switch").clientWidth / 2,
   canvas: document.querySelector("#graphview-canvas"),
   currentExp: [],
+  scale: 0,
   ctx: "",
   init() {
     this.canvas.setAttribute(
@@ -131,13 +131,13 @@ const graph = {
         Math.abs(calc_x) <=
         document.querySelector(".switch").clientWidth / 2
       ) {
-        calc_x += 0.1;
+        calc_x += 1;
         calculator.operationStack = this.currentExp.slice();
         calculator.replaceX(calc_x);
         calculator.calculate();
         if (calculator.value !== null) {
           ctx.beginPath();
-          ctx.rect(this.x - calc_x, this.y - calculator.value,0.5, 0.5);
+          ctx.rect(this.x - calc_x , this.y - calculator.value * this.scale,0.5, 0.5);
           ctx.stroke();
         }
       }
@@ -157,6 +157,11 @@ const graph = {
       this.plot_axes();
       this.drawGraph();
     });
+    this.canvas.addEventListener('wheel', (event) => {
+      this.scale += event.deltaY
+      this.plot_axes()
+      this.drawGraph()
+    })
   },
 };
 
