@@ -1,6 +1,5 @@
 // TODO fix sqrt
 
-
 let operations = {
   "+": { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
   "-": { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
@@ -95,8 +94,9 @@ const graph = {
   y: 400 / 2,
   x: document.querySelector(".switch").clientWidth / 2,
   canvas: document.querySelector("#graphview-canvas"),
-  currentExp: ["", "1", "/", "x"],
+  currentExp: [""],
   scale: 100,
+  calc_x: 0,
   ctx: "",
   init() {
     this.canvas.setAttribute(
@@ -122,28 +122,30 @@ const graph = {
     ctx.stroke();
   },
   drawGraph() {
-    const ctx = graph.canvas.getContext("2d");
-    let calc_x = -document.querySelector(".switch").clientWidth / 2;
-    if (this.currentExp !== 0) {
-      while (
-        Math.abs(calc_x) <=
-        document.querySelector(".switch").clientWidth / 2
-      ) {
-        calc_x += 1;
-        calculator.operationStack = this.currentExp.slice();
-        calculator.replaceX(calc_x);
-        calculator.calculate();
-        if (calculator.value !== null) {
-          ctx.beginPath();
-          ctx.rect(
-            this.x - calc_x,
-            this.y - calculator.value * this.scale,
-            0.5,
-            0.5
-          );
-          ctx.stroke();
-        }
+    const drawPoint = () => {
+      ctx.beginPath();
+      ctx.rect(
+        graph.x - graph.calc_x,
+        graph.y + calculator.value * Math.abs(graph.scale),
+        0.5,
+        0.5
+      );
+      ctx.stroke();
+    };
+    const calculatePoint = () => {
+      graph.calc_x += 1;
+      calculator.operationStack = graph.currentExp.slice();
+      calculator.replaceX(graph.calc_x);
+      calculator.calculate();
+      if (calculator.value !== null) {
+        drawPoint();
       }
+    };
+
+    const ctx = graph.canvas.getContext("2d");
+    this.calc_x = -this.calc_x;
+    if (this.currentExp !== 0) {
+      while (this.calc_x <= document.querySelector('.switch').clientWidth + Math.abs(this.x) * 2) calculatePoint()
     }
   },
   move() {
@@ -157,13 +159,12 @@ const graph = {
     this.canvas.addEventListener("mouseup", (e) => {
       this.x += e.offsetX - prev_x;
       this.y += e.offsetY - prev_y;
-      logPos()
+      logPos();
       this.plot_axes();
       this.drawGraph();
     });
     this.canvas.addEventListener("wheel", (event) => {
       this.scale += event.deltaY;
-      logPos()
       this.plot_axes();
       this.drawGraph();
     });
@@ -322,5 +323,6 @@ const init = () => {
 
 init();
 
-const debug = true
-const logPos = () => console.log(`x=${graph.x}y=${graph.y}scale=${graph.scale}`) && debug === true;
+const debug = true;
+const logPos = () =>
+  console.log(`x=${graph.x}y=${graph.y}scale=${graph.scale}`) && debug === true;
