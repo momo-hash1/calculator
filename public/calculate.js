@@ -1,3 +1,18 @@
+let operations = {
+    "+": { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
+    "-": { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
+    "*": { operation: (operand1, operand2) => operand1 * operand2, order: 3 },
+    "/": { operation: (operand1, operand2) => operand1 / operand2, order: 3 },
+    "^": { operation: (operand1) => operand1 ** 2, order: 4 },
+    sqrt: {
+      operation: (operand1) => {
+        return Math.sqrt(operand1);
+      },
+      order: 4,
+      unary: true,
+    },
+  };
+
 let getHighestOperator = (operationStack) => {
     let highestOperatorOrder = 0;
     let hightestOperator = {};
@@ -18,7 +33,7 @@ const calculate = (expression) => {
     while (
         Object.keys(getHighestOperator(operationStack)).length !== 0
     ) {
-        let highestOperator = getHighestOperator(calculator.operationStack);
+        let highestOperator = getHighestOperator(operationStack);
 
         let operand1 = parseFloat(
             operationStack[highestOperator.index - 1]

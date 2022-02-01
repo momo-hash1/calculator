@@ -1,20 +1,7 @@
 // TODO fix sqrt
-import calculate from "./calculate";
+import calculate from "./calculate.js";
 
-let operations = {
-  "+": { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
-  "-": { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
-  "*": { operation: (operand1, operand2) => operand1 * operand2, order: 3 },
-  "/": { operation: (operand1, operand2) => operand1 / operand2, order: 3 },
-  "^": { operation: (operand1) => operand1 ** 2, order: 4 },
-  sqrt: {
-    operation: (operand1) => {
-      return Math.sqrt(operand1);
-    },
-    order: 4,
-    unary: true,
-  },
-};
+
 
 let calculator = {
   operator: "",
