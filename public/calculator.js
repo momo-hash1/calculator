@@ -1,4 +1,5 @@
 // TODO fix sqrt
+import calculate from "./calculate";
 
 let operations = {
   "+": { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
@@ -7,63 +8,18 @@ let operations = {
   "/": { operation: (operand1, operand2) => operand1 / operand2, order: 3 },
   "^": { operation: (operand1) => operand1 ** 2, order: 4 },
   sqrt: {
-    operation: (operand1, operand2) => {
-      return Math.sqrt(operand2);
+    operation: (operand1) => {
+      return Math.sqrt(operand1);
     },
     order: 4,
     unary: true,
   },
 };
 
-let getHighestOperator = (operationStack) => {
-  let highestOperatorOrder = 0;
-  let hightestOperator = {};
-  operationStack.forEach((element, index) => {
-    if (operations[element] !== undefined) {
-      if (highestOperatorOrder < operations[element].order) {
-        hightestOperator = { operator: element, index: index };
-        highestOperatorOrder = operations[element].order;
-      }
-    }
-  });
-  return hightestOperator;
-};
-
 let calculator = {
   operator: "",
   value: "",
   operationStack: [],
-  calculate() {
-    calculator.clear();
-    calculator.operationStack.shift();
-    let nullFounded = false;
-    while (
-      Object.keys(getHighestOperator(calculator.operationStack)).length !== 0 &&
-      !nullFounded
-    ) {
-      let highestOperator = getHighestOperator(calculator.operationStack);
-
-      let operand1 = parseFloat(
-        calculator.operationStack[highestOperator.index - 1]
-      );
-      let operand2 = parseFloat(
-        calculator.operationStack[highestOperator.index + 1]
-      );
-
-      if (operand1 === 0 || operand2 === 0) {
-        this.operationStack[0] = null;
-        nullFounded = true;
-      } else {
-        calculator.operationStack.splice(highestOperator.index - 1, 2);
-
-        calculator.operationStack[highestOperator.index - 1] = operations[
-          highestOperator.operator
-        ].operation(operand1, operand2);
-      }
-    }
-    calculator.value = calculator.operationStack[0];
-    calculator.operationStack = [];
-  },
   removeValueByValue() {
     if (calculator.operationStack.length === 0) {
       calculator.clear();
@@ -90,12 +46,18 @@ let calculator = {
   },
 };
 
+const checkPowerFun = () => {
+  if (calculator.operationStack.includes('^')) {
+    return true
+  }
+}
+
 const graph = {
   y: 400 / 2,
   x: document.querySelector(".switch").clientWidth / 2,
   canvas: document.querySelector("#graphview-canvas"),
   currentExp: [""],
-  scale: 100,
+  scale: 0,
   calc_x: 0,
   ctx: "",
   init() {
@@ -104,6 +66,7 @@ const graph = {
       document.querySelector(".switch").clientWidth
     );
     this.canvas.setAttribute("height", 400);
+    checkPowerFun() ? 0.01 : -1500
     this.plot_axes();
     this.move();
   },
@@ -126,7 +89,7 @@ const graph = {
       ctx.beginPath();
       ctx.rect(
         graph.x - graph.calc_x,
-        graph.y + calculator.value * Math.abs(graph.scale),
+        graph.y + calculator.value * this.scale,
         0.5,
         0.5
       );
@@ -164,7 +127,13 @@ const graph = {
       this.drawGraph();
     });
     this.canvas.addEventListener("wheel", (event) => {
-      this.scale += event.deltaY;
+      if (checkPowerFun()) {
+        this.scale += event.deltaY > 0 ? 0.01 : 0.01
+      } else {
+        this.scale += event.deltaY
+      }
+      logPos();
+
       this.plot_axes();
       this.drawGraph();
     });
