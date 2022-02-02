@@ -10,7 +10,7 @@
     "mocha": "^9.2.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "npx mocha -r esm public/tests/calculateTest.js"
   },
   "repository": {
     "type": "git",
