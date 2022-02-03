@@ -1,4 +1,4 @@
-import nextToken from "./lexer";
+import lexer from "./lexer";
 import { functions, isExpression, operations, tokens } from "./operations";
 
 let getHighestOperator = (lexerTokens) => {
@@ -19,7 +19,7 @@ let getHighestOperator = (lexerTokens) => {
 const findLastChildrens = (lex) => {
   let lastChildrens = [];
   const findLastChild = (lex) => {
-    const nest = findNestedExpression([...nextToken(lex)]);
+    const nest = findNestedExpression(lexer(lex));
     if (nest.length !== 0) {
       nest.forEach((n) => {
         findLastChild(n.slice(1, n.length - 1));
@@ -42,7 +42,7 @@ const findLastChildrens = (lex) => {
 
 const removeParentheses = (expression) => {
   let lastChild = findLastChildrens(expression);
-  while (findNestedExpression([...nextToken(expression)]).length !== 0) {
+  while (findNestedExpression(lexer(expression)).length !== 0) {
     Object.keys(lastChild).forEach((key) => {
       let temp = expression.split("");
       temp.splice(expression.indexOf(key), key.length - 1);
@@ -60,7 +60,8 @@ const calculate = (expression) => {
 };
 
 const calculateBin = (expression) => {
-  let lexerTokens = [...nextToken(expression)];
+  let lexerTokens = lexer(expression);
+  console.log(lexerTokens);
   while (lexerTokens.length > 1) {
     lexerTokens.forEach((token) => {
       if (token.binary) {

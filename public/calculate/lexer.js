@@ -1,6 +1,6 @@
 import { tokens, token } from "./operations";
 
-function* nextToken(text) {
+function* tokenGenerator(text) {
   let pos = 0;
   let currentChar = "";
 
@@ -70,11 +70,11 @@ function* nextToken(text) {
   }
 }
 
-function isFloat(n){
+function isFloat(n) {
   return Number(n) === n && n % 1 !== 0;
 }
 
-const covertNumber = (lexerTokens) => {
+const convertNumber = (lexerTokens) => {
   lexerTokens.forEach((token, index) => {
     if (token.type === tokens.DOT) {
       lexerTokens[index - 1].value = parseFloat(
@@ -86,13 +86,38 @@ const covertNumber = (lexerTokens) => {
   });
   lexerTokens.forEach((token, index) => {
     if (!isNaN(parseInt(token.value))) {
-      if (!isFloat(token.value) ) {
+      if (!isFloat(token.value)) {
         lexerTokens[index].value = parseInt(token.value);
       }
     }
   });
   return lexerTokens;
 };
-console.log(covertNumber([...nextToken("20.0005+83*20.30")]));
 
-export default nextToken;
+const lexer = (expression) => {
+  let lexerTokens = [...tokenGenerator(expression)]
+  lexerTokens = convertNumber(lexerTokens)
+  lexerTokens = convertNegative(lexerTokens)
+  return lexerTokens
+}
+
+const convertNegative = (lexerTokens) => {
+  lexerTokens.forEach((token, index) => {
+    const prevIndex = index - 2 < 0 ? 0 : index - 2;
+    if (token.binary) {
+      if (!lexerTokens[prevIndex].binary) {
+        lexerTokens[index + 1].value = -lexerTokens[index + 1].value;
+      }
+    }
+  });
+  lexerTokens.forEach((_, index) => {
+    if (index > 0) {
+      if (lexerTokens[index - 1].binary === lexerTokens[index].binary) {
+        lexerTokens.splice(index, 1);
+      }
+    }
+  });
+  return lexerTokens;
+};
+
+export default lexer;
