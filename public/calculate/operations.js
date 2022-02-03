@@ -2,40 +2,41 @@ const functions = {
   sin: (value) => Math.sin(value),
   ln: (value) => Math.log(value),
   sqrt: (value) => Math.sqrt(value),
+  cos: (value) => Math.cos(value)
 };
 
-const parseFun = (expression) => {
-  const func = expression.slice(0, expression.indexOf("("));
-  const value = expression.slice(
-    expression.indexOf("("),
-    expression.indexOf(")")
+const isUnaryOperator = (expression) => {
+  return (
+    !Number.isInteger(expression) && expression.match(/[\+-\/\*\^]/) !== null
   );
-  return [func, value]
-}
+};
 
-
-const getFun = (funcExpression) => {
-  const [func, value] = parseFun(funcExpression)
-  return functions[func](value);
+const isExpression = (expression) => {
+  return expression.match(/\(|\)/) !== null || expression.match(/[\+-\/\*\^]/) !== null
 };
 
 const operations = {
-  PLUS: { operation: (operand1, operand2) => operand1 + operand2 },
-  MINUS: { operation: (operand1, operand2) => operand1 - operand2 },
-  MUL: { operation: (operand1, operand2) => operand1 * operand2 },
-  DEL: { operation: (operand1, operand2) => operand1 / operand2 },
-  POWER: { operation: (operand1, operand2) => operand1 ** operand2 },
-  FUN: { operations: getFun },
+  MINUS: { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
+  PLUS: { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
+  MUL: { operation: (operand1, operand2) => operand1 * operand2, order: 3 },
+  DEL: { operation: (operand1, operand2) => operand1 / operand2, order: 3 },
+  POWER: { operation: (operand1, operand2) => operand1 ** operand2, order: 4 },
 };
 let tokens = {};
-['NUM', 'LPR', 'RPR', 'BINOP', 'FUN'].forEach((op, index) => {
-  tokens[op] = index;
-});
+["BINARY", "NUM", "LPR", "RPR", "FUN", ...Object.keys(operations)].forEach(
+  (op, index) => {
+    tokens[op] = index;
+  }
+);
 
 tokens = Object.freeze(tokens);
 
 const token = (...args) => {
-  return { type: args[0], value: args[1] };
+  return {
+    type: args[0],
+    value: args[1],
+    binary: args[2] !== undefined ? true : false,
+  };
 };
 
-export { operations, token, tokens, parseFun};
+export { operations, token, tokens, isUnaryOperator, functions, isExpression };

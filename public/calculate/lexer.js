@@ -30,19 +30,19 @@ function* nextToken(text) {
       continue;
     }
     if (currentChar === "+") {
-      yield token(tokens.BINOP, "+");
+      yield token(tokens.PLUS, "+", tokens.BINARY);
     }
     if (currentChar === "-") {
-      yield token(tokens.BINOP, "-");
+      yield token(tokens.MINUS, "-", tokens.BINARY);
     }
     if (currentChar === "*") {
-      yield token(tokens.BINOP, "*");
+      yield token(tokens.MUL, "*", tokens.BINARY);
     }
     if (currentChar === "/") {
-      yield token(tokens.BINOP, "/");
+      yield token(tokens.DEL, "/", tokens.BINARY);
     }
     if (currentChar === "^") {
-      yield token(tokens.BINOP, "^");
+      yield token(tokens.POW, "^", tokens.BINARY);
     }
     if (currentChar === "(") {
       yield token(tokens.LPR, "(");
