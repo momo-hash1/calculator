@@ -23,7 +23,7 @@ const operations = {
   POWER: { operation: (operand1, operand2) => operand1 ** operand2, order: 4 },
 };
 let tokens = {};
-["BINARY", "NUM", "LPR", "RPR", "FUN", ...Object.keys(operations)].forEach(
+["BINARY", "NUM", "LPR", "RPR", "FUN", "DOT", ...Object.keys(operations)].forEach(
   (op, index) => {
     tokens[op] = index;
   }

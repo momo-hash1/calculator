@@ -42,9 +42,7 @@ const findLastChildrens = (lex) => {
 
 const removeParentheses = (expression) => {
   let lastChild = findLastChildrens(expression);
-  while (
-    findNestedExpression([...nextToken(expression)]).length !== 0
-  ) {
+  while (findNestedExpression([...nextToken(expression)]).length !== 0) {
     Object.keys(lastChild).forEach((key) => {
       let temp = expression.split("");
       temp.splice(expression.indexOf(key), key.length - 1);
