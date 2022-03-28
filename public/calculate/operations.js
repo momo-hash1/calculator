@@ -2,8 +2,9 @@ const functions = {
   sin: (value) => Math.sin(value),
   ln: (value) => Math.log(value),
   sqrt: (value) => Math.sqrt(value),
-  cos: (value) => Math.cos(value)
+  cos: (value) => Math.cos(value),
 };
+
 const operations = {
   MINUS: { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
   PLUS: { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
@@ -11,12 +12,18 @@ const operations = {
   DEL: { operation: (operand1, operand2) => operand1 / operand2, order: 3 },
   POWER: { operation: (operand1, operand2) => operand1 ** operand2, order: 4 },
 };
-let tokens = {};
-["BINARY", "NUM", "LPR", "RPR", "FUN", "DOT", ...Object.keys(operations)].forEach(
-  (op, index) => {
-    tokens[op] = index;
-  }
-);
+let tokens = {
+  NUM: "num",
+  LPR: "(",
+  RPR: ")",
+  FUN: "fun",
+  DOT: ".",
+  MINUS: "-",
+  PLUS: "+",
+  MUL: "*",
+  DEL: "/",
+  POW: "^",
+};
 
 tokens = Object.freeze(tokens);
 

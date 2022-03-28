@@ -4,7 +4,7 @@ import assert from "assert";
 
 describe("Lexer", () => {
   it("generate tokens properly", () => {
-    assert.equal(lexer("2*-67/0.5+sin(0.5)"), [
+    assert.deepEqual(lexer("2*-67/0.5-sin(0.5)"), [
       {
         type: tokens.NUM,
         value: 2,
@@ -19,15 +19,15 @@ describe("Lexer", () => {
       },
       {
         type: tokens.DEL,
-        value: 2,
+        value: "/",
       },
       {
         type: tokens.NUM,
         value: 0.5,
       },
       {
-        type: tokens.PLUS,
-        value: "+",
+        type: tokens.MINUS,
+        value: "-",
       },
       {
         type: tokens.FUN,

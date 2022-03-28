@@ -4,12 +4,6 @@ function* tokenGenerator(text) {
   let pos = 0;
   let currentChar = "";
 
-  const skipWhiteSpace = () => {
-    while (currentChar === " ") {
-      ++pos;
-    }
-  };
-
   const findValue = (predicate) => {
     let currentStr = text.slice(pos, text.length);
     let value = "";
@@ -25,39 +19,49 @@ function* tokenGenerator(text) {
   };
   while (pos < text.length) {
     currentChar = text[pos];
-    if (currentChar === " ") {
-      skipWhiteSpace();
-      continue;
-    }
     if (currentChar === "+") {
       yield token(tokens.PLUS, "+");
     }
     if (currentChar === "-") {
-      yield token(tokens.MINUS, "-");
+      if (!isNaN(parseInt(text[pos - 1]))) {
+        yield token(tokens.MINUS, "-");
+      }
     }
-    if (currentChar === "*") {
+    if (currentChar === tokens.MUL) {
       yield token(tokens.MUL, "*");
     }
-    if (currentChar === "/") {
+    if (currentChar === tokens.DEL) {
       yield token(tokens.DEL, "/");
     }
-    if (currentChar === "^") {
+    if (currentChar === tokens.POW) {
       yield token(tokens.POW, "^");
     }
-    if (currentChar === "(") {
+    if (currentChar === tokens.LPR) {
       yield token(tokens.LPR, "(");
     }
-    if (currentChar === ")") {
+    if (currentChar === tokens.RPR) {
       yield token(tokens.RPR, ")");
     }
-    if (currentChar === ".") {
-      yield token(tokens.DOT, ".");
-    }
     if (!isNaN(parseInt(currentChar))) {
-      yield token(
+      const prevPos = pos;
+      const _token = token(
         tokens.NUM,
         findValue((char) => !isNaN(parseInt(char)))
       );
+      if (text[prevPos - 1] === tokens.MINUS && isNaN(parseInt(text[prevPos - 2]))) {
+        _token.value = parseInt(_token.value)
+        _token.value = -_token.value;
+      }
+      if (text[pos+1] === tokens.DOT) {
+        pos += 2
+        const nextValue = findValue((char) => !isNaN(parseInt(char)))
+        _token.value = _token.value.concat('.',nextValue)
+        _token.value = parseFloat(_token.value)
+      }else{
+        _token.value = parseInt(_token.value)
+      }
+      
+      yield _token;
     }
     if (currentChar.match(/[a-z]/)) {
       yield token(
@@ -69,54 +73,8 @@ function* tokenGenerator(text) {
     ++pos;
   }
 }
-
-function isFloat(n) {
-  return Number(n) === n && n % 1 !== 0;
-}
-
-const convertNumber = (lexerTokens) => {
-  lexerTokens.forEach((token, index) => {
-    if (token.type === tokens.DOT) {
-      lexerTokens[index - 1].value = parseFloat(
-        lexerTokens[index - 1].value.concat(".", lexerTokens[index + 1].value)
-      );
-
-      lexerTokens.splice(index, 2);
-    }
-  });
-  lexerTokens.forEach((token, index) => {
-    if (!isNaN(parseInt(token.value))) {
-      if (!isFloat(token.value)) {
-        lexerTokens[index].value = parseInt(token.value);
-      }
-    }
-  });
-  return lexerTokens;
-};
-
 const lexer = (expression) => {
-  let lexerTokens = [...tokenGenerator(expression)]
-  lexerTokens = convertNumber(lexerTokens)
-  lexerTokens = convertNegative(lexerTokens)
-  return lexerTokens
-}
-
-const convertNegative = (lexerTokens) => {
-  lexerTokens.forEach((token, index) => {
-    const prevIndex = index - 2 < 0 ? 0 : index - 2;
-    if (token.binary) {
-      if (!lexerTokens[prevIndex].binary) {
-        lexerTokens[index + 1].value = -lexerTokens[index + 1].value;
-      }
-    }
-  });
-  lexerTokens.forEach((_, index) => {
-    if (index > 0) {
-      if (lexerTokens[index - 1].binary === lexerTokens[index].binary) {
-        lexerTokens.splice(index, 1);
-      }
-    }
-  });
+  let lexerTokens = [...tokenGenerator(expression)];
   return lexerTokens;
 };
 
