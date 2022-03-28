@@ -4,17 +4,6 @@ const functions = {
   sqrt: (value) => Math.sqrt(value),
   cos: (value) => Math.cos(value)
 };
-
-const isUnaryOperator = (expression) => {
-  return (
-    !Number.isInteger(expression) && expression.match(/[\+-\/\*\^]/) !== null
-  );
-};
-
-const isExpression = (expression) => {
-  return expression.match(/\(|\)/) !== null || expression.match(/[\+-\/\*\^]/) !== null
-};
-
 const operations = {
   MINUS: { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
   PLUS: { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
@@ -35,8 +24,7 @@ const token = (...args) => {
   return {
     type: args[0],
     value: args[1],
-    binary: args[2] !== undefined ? true : false,
   };
 };
 
-export { operations, token, tokens, isUnaryOperator, functions, isExpression };
+export { operations, token, tokens, functions };

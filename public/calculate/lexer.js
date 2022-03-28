@@ -1,4 +1,4 @@
-import { tokens, token } from "./operations";
+import { tokens, token } from "./operations.js";
 
 function* tokenGenerator(text) {
   let pos = 0;
@@ -30,19 +30,19 @@ function* tokenGenerator(text) {
       continue;
     }
     if (currentChar === "+") {
-      yield token(tokens.PLUS, "+", tokens.BINARY);
+      yield token(tokens.PLUS, "+");
     }
     if (currentChar === "-") {
-      yield token(tokens.MINUS, "-", tokens.BINARY);
+      yield token(tokens.MINUS, "-");
     }
     if (currentChar === "*") {
-      yield token(tokens.MUL, "*", tokens.BINARY);
+      yield token(tokens.MUL, "*");
     }
     if (currentChar === "/") {
-      yield token(tokens.DEL, "/", tokens.BINARY);
+      yield token(tokens.DEL, "/");
     }
     if (currentChar === "^") {
-      yield token(tokens.POW, "^", tokens.BINARY);
+      yield token(tokens.POW, "^");
     }
     if (currentChar === "(") {
       yield token(tokens.LPR, "(");
