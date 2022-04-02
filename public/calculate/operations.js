@@ -5,6 +5,10 @@ const functions = {
   cos: (value) => Math.cos(value),
 };
 
+const isFun = (type) => {
+  return Object.keys(functions).includes(type)
+}
+
 const operations = {
   MINUS: { operation: (operand1, operand2) => operand1 - operand2, order: 2 },
   PLUS: { operation: (operand1, operand2) => operand1 + operand2, order: 2 },
@@ -23,6 +27,7 @@ let tokens = {
   MUL: "*",
   DEL: "/",
   POW: "^",
+  INNER: 'inner'
 };
 
 tokens = Object.freeze(tokens);
@@ -34,4 +39,4 @@ const token = (...args) => {
   };
 };
 
-export { operations, token, tokens, functions };
+export { operations, token, tokens, functions, isFun };
