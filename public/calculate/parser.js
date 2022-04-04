@@ -1,5 +1,6 @@
 import lexer from "./lexer.js";
-import { tokens, token, isFun } from "./operations.js";
+import { tokens, token, operationOrder } from "./operations.js";
+import { isFun, logFullObject } from "../utils.js";
 
 const containsParantheses = (_tokens) => {
   if (_tokens.length === 0 || _tokens.length === 1) return false;
@@ -37,10 +38,12 @@ const replaceParantheses = (_tokens) => {
   const rprIndex = onlyTypes.lastIndexOf(tokens.RPR);
 
   _tokens.splice(lprIndex, rprIndex - lprIndex);
-  const innerToken = token(tokens.INNER, prTerm.slice(lprIndex + 1, rprIndex));
+  let innerToken = token(tokens.INNER, prTerm.slice(lprIndex + 1, rprIndex));
   if (containsParantheses(innerToken.value)) {
     prepToBaseCase(innerToken.value);
   }
+  innerToken.value =
+    innerToken.value.length === 1 ? innerToken.value[0] : innerToken.value;
   _tokens[lprIndex] = innerToken;
   return _tokens;
 };
@@ -85,43 +88,46 @@ const getAst = (_tokens) => {
   )
     return _tokens;
   const getAstNode = (type = null, index) => {
-    return {
+    const node = {
       type,
       left: _tokens.slice(0, index),
       right: _tokens.slice(index + 1, _tokens.length),
     };
+
+    node.left = node.left.length === 1 ? node.left[0] : node.left;
+    node.right = node.right.length === 1 ? node.right[0] : node.right;
+    return node;
   };
   let astNode = {};
-  _tokens.forEach((_token, index) => {
-    if (_token.type === tokens.MUL) {
-      astNode = getAstNode(tokens.MUL, index);
-    }
-    if (_token.type === tokens.DEL) {
-      astNode = getAstNode(tokens.DEL, index);
-    }
-    if (_token.type === tokens.PLUS) {
-      astNode = getAstNode(tokens.PLUS, index);
-    }
-    if (_token.type === tokens.MINUS) {
-      astNode = getAstNode(tokens.MINUS, index);
-    }
+
+  for (let index = 0; index < _tokens.length; index++) {
+    let _token = _tokens[index];
     if (isFun(_token.type)) {
-      if (!_token.value.hasOwnProperty('left')) {
+      if (!_token.value.hasOwnProperty("left")) {
         _token.value = getAst(_token.value.value);
       }
     }
     if (_token.type === tokens.INNER) {
       _token.value = getAst(_token.value);
     }
-  });
-  if (Object.keys(astNode).length === 0) {
-    return _tokens
   }
-  if (astNode.hasOwnProperty('left') && astNode.hasOwnProperty('right')) {
-    if (astNode.left.length !== 1) {
+  const onlyTypes = _tokens.map(_tok => _tok.type)
+  for (const operator of operationOrder) {
+    if (onlyTypes.includes(operator)) {
+      const index = onlyTypes.indexOf(operator)
+      astNode = getAstNode(operator, index);
+      break
+    }
+  }
+
+  if (Object.keys(astNode).length === 0) {
+    return _tokens;
+  }
+  if (astNode.hasOwnProperty("left") && astNode.hasOwnProperty("right")) {
+    if (Array.isArray(astNode.left)) {
       astNode.left = getAst(astNode.left);
     }
-    if (astNode.right.length !== 1) {
+     if (Array.isArray(astNode.right)) {
       astNode.right = getAst(astNode.right);
     }
   }
@@ -132,5 +138,7 @@ const parser = (expression) => {
   let _tokens = lexer(expression);
   prepToBaseCase(_tokens);
   let ast = getAst(_tokens);
-  return ast
+  return ast;
 };
+
+export default parser;
