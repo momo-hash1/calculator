@@ -15,9 +15,9 @@ p{
     border-radius: 10px;
 }
 
-/* .btn:focus{
+.active-btn{
     background-color: #dc2f02
-} */
+}
 
 .button-main{
     border-radius: 10px;
@@ -159,7 +159,10 @@ main{
     font-family: 'Open Sans', sans-serif;
     border-radius: 10px;
     padding: 10px;
+    position: absolute;
+    z-index: 3;
     display: none;
+    top: 0;
 }
 
 .toolbox-list{
