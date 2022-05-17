@@ -9,6 +9,7 @@ const functions = {
   },
   cos: (value) => Math.cos(value),
   tg: (value) => Math.tan(value),
+  cot: (value) => 1/Math.tan(value)
 };
 
 let tokens = {

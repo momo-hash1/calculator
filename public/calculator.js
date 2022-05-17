@@ -2,6 +2,7 @@ const number_output = {
   number_view: document.querySelector(".exp-nums"),
   view: document.querySelector(".exp-view"),
   x: 0,
+  numbers: "8*sin(78+98)",
   wheelScroll() {
     this.view.addEventListener("wheel", (e) => {
       e.preventDefault();
@@ -58,9 +59,16 @@ const number_output = {
     this.number_view.style.transform = `translateX(${this.x}px)`;
   },
   addCharacter(char) {
-    this.number_view.textContent += char;
-    const maxScroll = this.number_view.scrollWidth - 315;
-    this.number_view.style.transform = `translateX(${-maxScroll}px)`;
+    this.numbers += char;
+    this.number_view.textContent = this.numbers;
+    this.x = this.number_view.scrollWidth - 315;
+    this.number_view.style.transform = `translateX(${-this.x}px)`;
+  },
+  removeLastCharacter() {
+    this.numbers = this.numbers.slice(0, -1);
+    this.number_view.textContent = this.numbers;
+    this.x = this.number_view.scrollWidth - 315;
+    this.number_view.style.transform = `translateX(${-this.x}px)`;
   },
 };
 
@@ -81,7 +89,34 @@ const toolboxHandler = () => {
   });
 };
 
+const keyboardHandler = () => {
+  document.querySelectorAll(".num-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      number_output.addCharacter(button.textContent);
+    });
+  });
+};
+
+const operationsHandler = () => {
+  document.querySelectorAll(".op-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!isNaN(parseInt(number_output.numbers.at(-1)))) {
+        number_output.addCharacter(button.textContent)
+      }
+    });
+  });
+};
+
+const clearHandler = () => {
+  document.querySelector(".clear").addEventListener("click", () => {
+    number_output.removeLastCharacter();
+  });
+};
+
 toolboxHandler();
+keyboardHandler();
+operationsHandler();
+clearHandler();
 
 number_output.wheelScroll();
 number_output.mobileSelection();

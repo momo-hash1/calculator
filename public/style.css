@@ -84,6 +84,12 @@ main{
     margin-left: 10px;
 }
 
+.exp-nums{
+    transition: transform .5s ease;
+    word-break: keep-all;
+    white-space: nowrap;
+}
+
 .exp-wrapper{
     position: absolute;
     width: 100%;
