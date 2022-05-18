@@ -49,11 +49,10 @@ const number_output = {
     this._basic_scroll(x < viewRect.x, x > viewRect.x + viewRect.width);
   },
   _basic_scroll(leftPredicate, rightPredicate) {
-    const maxScroll = this.number_view.scrollWidth - 315;
-    if (leftPredicate && this.x !== 0) {
+    if (leftPredicate && this.x < 0) {
       this.x += 20;
-    }
-    if (rightPredicate && -this.x < maxScroll) {
+    }else
+    if (rightPredicate && -this.x < this._getMaxScroll()) {
       this.x -= 20;
     }
     this.number_view.style.transform = `translateX(${this.x}px)`;
@@ -61,15 +60,20 @@ const number_output = {
   addCharacter(char) {
     this.numbers += char;
     this.number_view.textContent = this.numbers;
-    this.x = this.number_view.scrollWidth - this.number_view.clientWidth;
-    this.number_view.style.transform = `translateX(${-this.x}px)`;
+    this._returnToStart()
   },
   removeLastCharacter() {
     this.numbers = this.numbers.slice(0, -1);
     this.number_view.textContent = this.numbers;
-    this.x = this.number_view.scrollWidth - this.number_view.clientWidth;
-    this.number_view.style.transform = `translateX(${-this.x}px)`;
+    this._returnToStart()
   },
+  _getMaxScroll(){
+    return this.number_view.scrollWidth - this.number_view.clientWidth
+  },
+  _returnToStart(){
+    this.x = -this._getMaxScroll();
+    this.number_view.style.transform = `translateX(${this.x}px)`;
+  }
 };
 
 const toolboxHandler = () => {
@@ -100,7 +104,8 @@ const keyboardHandler = () => {
 const operationsHandler = () => {
   document.querySelectorAll(".op-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      if (!isNaN(parseInt(number_output.numbers.at(-1)))) {
+      const prevChar = number_output.numbers.at(-1)
+      if (!isNaN(parseInt(prevChar)) || (prevChar === '(' || prevChar === ')')) {
         number_output.addCharacter(button.textContent)
       }
     });
@@ -130,12 +135,31 @@ const paranthesesHandler = () => {
   })
 }
 
+const dotHandler = () => {
+  const findNearestExpression = (expression) => {
+    let resExp = ''
+    for (let index = expression.length -1; index !== 0; index--) {
+      const char = expression[index]; 
+      if (!isNaN(parseInt(char)) || char === '.') {
+        resExp += char
+      }else{break}
+    }
+    return resExp
+  }
+  document.querySelector('.dot-btn').addEventListener('click', () => {
+    const nearExp = findNearestExpression(number_output.numbers)
+    if (!nearExp.includes('.') && nearExp.length !== 0) {
+      number_output.addCharacter('.')
+    }
+  })
+}
 
 toolboxHandler();
 keyboardHandler();
 operationsHandler();
 clearHandler();
 paranthesesHandler()
+dotHandler()
 
 number_output.wheelScroll();
 number_output.mobileSelection();
