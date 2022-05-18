@@ -61,13 +61,13 @@ const number_output = {
   addCharacter(char) {
     this.numbers += char;
     this.number_view.textContent = this.numbers;
-    this.x = this.number_view.scrollWidth - 315;
+    this.x = this.number_view.scrollWidth - this.number_view.clientWidth;
     this.number_view.style.transform = `translateX(${-this.x}px)`;
   },
   removeLastCharacter() {
     this.numbers = this.numbers.slice(0, -1);
     this.number_view.textContent = this.numbers;
-    this.x = this.number_view.scrollWidth - 315;
+    this.x = this.number_view.scrollWidth - this.number_view.clientWidth;
     this.number_view.style.transform = `translateX(${-this.x}px)`;
   },
 };
@@ -113,10 +113,29 @@ const clearHandler = () => {
   });
 };
 
+const paranthesesHandler = () => {
+  document.querySelectorAll('.pr-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const selection = window.getSelection().toString()
+      if (selection.length === 0) {
+        number_output.addCharacter(button.textContent)
+      }else{
+        const selectionText = selection.trim()
+        const wrappedText = "(" + selectionText + ")"
+        number_output.numbers = number_output.numbers.replace(selectionText, wrappedText)
+  
+        number_output.number_view.textContent = number_output.numbers;
+      }
+    })
+  })
+}
+
+
 toolboxHandler();
 keyboardHandler();
 operationsHandler();
 clearHandler();
+paranthesesHandler()
 
 number_output.wheelScroll();
 number_output.mobileSelection();

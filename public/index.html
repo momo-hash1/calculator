@@ -26,15 +26,20 @@
       <div class="calculator">
         <div class="input">
           <p class="input-header">Calculator</p>
-          <div class="exp-view">
-            <div class="exp-wrapper">
-              <div class="exp-numbers">
-                <div class="exp-num-view">
-                  <p class="exp-nums">8*sin(78+98)</p>
+          <div class="input-main">
+            <div class="exp-view">
+              <div class="exp-wrapper">
+                <div class="exp-numbers">
+                  <div class="exp-num-view">
+                    <p class="exp-nums">8*sin(78+98)</p>
+                  </div>
                 </div>
               </div>
+              <div class="exp-background"></div>
             </div>
-            <div class="exp-background"></div>
+            <button class="btn expanded-btn clear">
+              <i class="bi bi-backspace" style="font-size: 20px"></i>
+            </button>
           </div>
         </div>
         <div class="keyboard">
@@ -43,7 +48,7 @@
             <button class="btn header-btn pr-btn">(</button>
             <button class="btn header-btn pr-btn">)</button>
             <button class="btn expanded-btn clear">
-              <i class="bi bi-backspace" style="font-size: 20px"></i>
+              =
             </button>
           </div>
           <div class="keyboard-main">
@@ -66,7 +71,7 @@
               <button class="btn button-main op-btn">-</button>
             </div>
             <div class="row">
-              <button class="btn button-main equality">=</button>
+              <button class="btn button-main equality">.</button>
               <button class="btn button-main num-btn">0</button>
               <button class="btn button-main op-btn">+</button>
             </div>

@@ -105,7 +105,15 @@ main{
 .exp-view{
     display: flex;
     align-items: center;
+    flex: 1;
+    margin-right: 10px;
 }
+
+.input-main{
+    display: flex;
+    align-items: center;
+}
+
 
 .keyboard{
     background-color: #000;
@@ -123,6 +131,7 @@ main{
 .expanded-btn{
     width: 100px;
     height: 50px;
+    font-size: 25px;
 }
 
 .header-btn{
