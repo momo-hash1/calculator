@@ -2,3 +2,5 @@ start.bat
 node_modules
 *.txt
 .vscode
+.parcel-cache
+dist

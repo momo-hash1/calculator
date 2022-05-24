@@ -1,8 +1,10 @@
+import calculate from "./calculate/calculate"
+
 const number_output = {
   number_view: document.querySelector(".exp-nums"),
   view: document.querySelector(".exp-view"),
   x: 0,
-  numbers: "8*sin(78+98)",
+  numbers: "",
   wheelScroll() {
     this.view.addEventListener("wheel", (e) => {
       e.preventDefault();
@@ -51,8 +53,7 @@ const number_output = {
   _basic_scroll(leftPredicate, rightPredicate) {
     if (leftPredicate && this.x < 0) {
       this.x += 20;
-    }else
-    if (rightPredicate && -this.x < this._getMaxScroll()) {
+    } else if (rightPredicate && -this.x < this._getMaxScroll()) {
       this.x -= 20;
     }
     this.number_view.style.transform = `translateX(${this.x}px)`;
@@ -60,20 +61,20 @@ const number_output = {
   addCharacter(char) {
     this.numbers += char;
     this.number_view.textContent = this.numbers;
-    this._returnToStart()
+    this._returnToStart();
   },
   removeLastCharacter() {
     this.numbers = this.numbers.slice(0, -1);
     this.number_view.textContent = this.numbers;
-    this._returnToStart()
+    this._returnToStart();
   },
-  _getMaxScroll(){
-    return this.number_view.scrollWidth - this.number_view.clientWidth
+  _getMaxScroll() {
+    return this.number_view.scrollWidth - this.number_view.clientWidth;
   },
-  _returnToStart(){
+  _returnToStart() {
     this.x = -this._getMaxScroll();
-    this.number_view.style.transform = `translateX(${this.x}px)`;
-  }
+    this.number_view.style.transform =`translateX(${this.x}px)`;
+  },
 };
 
 const toolboxHandler = () => {
@@ -104,9 +105,9 @@ const keyboardHandler = () => {
 const operationsHandler = () => {
   document.querySelectorAll(".op-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      const prevChar = number_output.numbers.at(-1)
-      if (!isNaN(parseInt(prevChar)) || (prevChar === '(' || prevChar === ')')) {
-        number_output.addCharacter(button.textContent)
+      const prevChar = number_output.numbers.at(-1);
+      if (!isNaN(parseInt(prevChar)) || prevChar === "(" || prevChar === ")") {
+        number_output.addCharacter(button.textContent);
       }
     });
   });
@@ -119,37 +120,78 @@ const clearHandler = () => {
 };
 
 const paranthesesHandler = () => {
-  document.querySelectorAll('.pr-btn').forEach(button => {
-    button.addEventListener('click', () => {
-      const selection = window.getSelection().toString()
+  document.querySelectorAll(".pr-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const selection = window.getSelection().toString();
       if (selection.length === 0) {
-        number_output.addCharacter(button.textContent)
-      }else{
-        const selectionText = selection.trim()
-        const wrappedText = "(" + selectionText + ")"
-        number_output.numbers = number_output.numbers.replace(selectionText, wrappedText)
-  
+        number_output.addCharacter(button.textContent);
+      } else {
+        const selectionText = selection.trim();
+        const wrappedText = "(" + selectionText + ")";
+        number_output.numbers = number_output.numbers.replace(
+          selectionText,
+          wrappedText
+        );
+
         number_output.number_view.textContent = number_output.numbers;
       }
-    })
-  })
-}
+    });
+  });
+};
 
 const dotHandler = () => {
   const findNearestExpression = (expression) => {
-    let resExp = ''
-    for (let index = expression.length -1; index !== 0; index--) {
-      const char = expression[index]; 
-      if (!isNaN(parseInt(char)) || char === '.') {
-        resExp += char
-      }else{break}
+    let resExp = "";
+    for (let index = expression.length - 1; index !== 0; index--) {
+      const char = expression[index];
+      if (!isNaN(parseInt(char)) || char === ".") {
+        resExp += char;
+      } else {
+        break;
+      }
     }
-    return resExp
-  }
-  document.querySelector('.dot-btn').addEventListener('click', () => {
-    const nearExp = findNearestExpression(number_output.numbers)
-    if (!nearExp.includes('.') && nearExp.length !== 0) {
-      number_output.addCharacter('.')
+    return resExp;
+  };
+  document.querySelector(".dot-btn").addEventListener("click", () => {
+    const nearExp = findNearestExpression(number_output.numbers);
+    if (!nearExp.includes(".") && nearExp.length !== 0) {
+      number_output.addCharacter(".");
+    }
+  });
+};
+
+const toolboxBtnHandler = (selectedText) => {
+  document.querySelectorAll(".tool-item").forEach((button) => {
+    button.addEventListener("click", () => {
+      // const selectedText = window.getSelection().toString().trim()
+      number_output.addCharacter(`${button.textContent.toLowerCase()}(`)
+    });
+  });
+};
+
+const getErrorMessageElement = (message) => {
+  const msgElement = document.createElement('p')
+  msgElement.classList.add('error-message')
+  msgElement.textContent = message
+  return msgElement
+}
+
+const equalBtnHandler = () => {
+  document.querySelector('.equality').addEventListener('click',() => {
+    const expView = document.querySelector('.exp-num-view');
+    if (expView.children.length > 1) {
+      expView.style.transform = `translate(${0}px,${0}px)`
+      expView.lastElementChild.remove()
+    }else{
+      const result = document.createElement('p')
+      const calculatedResult = calculate(number_output.numbers)
+      if (typeof calculatedResult === 'object') {
+        document.querySelector('.input-messages').append(getErrorMessageElement(calculatedResult.err))
+      }else{
+        result.textContent = calculate(number_output.numbers)
+        expView.append(result)
+        expView.style.transform = `translate(${0}px,${-30}px)`
+      }
     }
   })
 }
@@ -158,9 +200,12 @@ toolboxHandler();
 keyboardHandler();
 operationsHandler();
 clearHandler();
-paranthesesHandler()
-dotHandler()
+paranthesesHandler();
+dotHandler();
+toolboxBtnHandler();
+equalBtnHandler()
 
+number_output.addCharacter('')
 number_output.wheelScroll();
 number_output.mobileSelection();
 number_output.mouseSelection();
