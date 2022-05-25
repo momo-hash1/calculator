@@ -1,10 +1,11 @@
-import calculate from "./calculate/calculate"
+import calculate from "./calculate/calculate";
 
 const number_output = {
   number_view: document.querySelector(".exp-nums"),
   view: document.querySelector(".exp-view"),
   x: 0,
   numbers: "",
+  result: null,
   wheelScroll() {
     this.view.addEventListener("wheel", (e) => {
       e.preventDefault();
@@ -73,7 +74,7 @@ const number_output = {
   },
   _returnToStart() {
     this.x = -this._getMaxScroll();
-    this.number_view.style.transform =`translateX(${this.x}px)`;
+    this.number_view.style.transform = `translateX(${this.x}px)`;
   },
 };
 
@@ -94,9 +95,23 @@ const toolboxHandler = () => {
   });
 };
 
+const checkResultAndReplace = () => {
+  if (typeof number_output.result === "number") {
+    const expView = document.querySelector(".exp-num-view");
+
+    number_output.numbers = number_output.result.toString();
+    number_output.result = null;
+
+    expView.style.transform = `translate(${0}px,${0}px)`;
+    expView.lastElementChild.remove();
+
+    document.querySelector(".input-messages").innerHTML = ''
+  }
+};
 const keyboardHandler = () => {
   document.querySelectorAll(".num-btn").forEach((button) => {
     button.addEventListener("click", () => {
+      checkResultAndReplace();
       number_output.addCharacter(button.textContent);
     });
   });
@@ -105,6 +120,7 @@ const keyboardHandler = () => {
 const operationsHandler = () => {
   document.querySelectorAll(".op-btn").forEach((button) => {
     button.addEventListener("click", () => {
+      checkResultAndReplace();
       const prevChar = number_output.numbers.at(-1);
       if (!isNaN(parseInt(prevChar)) || prevChar === "(" || prevChar === ")") {
         number_output.addCharacter(button.textContent);
@@ -115,6 +131,7 @@ const operationsHandler = () => {
 
 const clearHandler = () => {
   document.querySelector(".clear").addEventListener("click", () => {
+    checkResultAndReplace();
     number_output.removeLastCharacter();
   });
 };
@@ -153,6 +170,7 @@ const dotHandler = () => {
     return resExp;
   };
   document.querySelector(".dot-btn").addEventListener("click", () => {
+    checkResultAndReplace();
     const nearExp = findNearestExpression(number_output.numbers);
     if (!nearExp.includes(".") && nearExp.length !== 0) {
       number_output.addCharacter(".");
@@ -160,41 +178,59 @@ const dotHandler = () => {
   });
 };
 
-const toolboxBtnHandler = (selectedText) => {
+const toolboxBtnHandler = () => {
   document.querySelectorAll(".tool-item").forEach((button) => {
     button.addEventListener("click", () => {
-      // const selectedText = window.getSelection().toString().trim()
-      number_output.addCharacter(`${button.textContent.toLowerCase()}(`)
+      number_output.addCharacter(`${button.textContent.toLowerCase()}(`);
     });
   });
 };
-
+const getHeaderInput = (message) => {
+  const msgElement = document.createElement("p");
+  msgElement.textContent = message;
+  return msgElement;
+};
 const getErrorMessageElement = (message) => {
-  const msgElement = document.createElement('p')
-  msgElement.classList.add('error-message')
-  msgElement.textContent = message
-  return msgElement
-}
+  const element = getHeaderInput(message);
+  element.classList.add("error-message")
+  return element;
+};
+
+const getHeaderInputBtn = (message) => {
+  const element = getHeaderInput(message);
+  element.classList.add("input-up-btn")
+  return element;
+};
 
 const equalBtnHandler = () => {
-  document.querySelector('.equality').addEventListener('click',() => {
-    const expView = document.querySelector('.exp-num-view');
-    if (expView.children.length > 1) {
-      expView.style.transform = `translate(${0}px,${0}px)`
-      expView.lastElementChild.remove()
-    }else{
-      const result = document.createElement('p')
-      const calculatedResult = calculate(number_output.numbers)
-      if (typeof calculatedResult === 'object') {
-        document.querySelector('.input-messages').append(getErrorMessageElement(calculatedResult.err))
-      }else{
-        result.textContent = calculate(number_output.numbers)
-        expView.append(result)
-        expView.style.transform = `translate(${0}px,${-30}px)`
-      }
+  document.querySelector(".equality").addEventListener("click", () => {
+    console.log(number_output );
+    const expView = document.querySelector(".exp-num-view");
+
+    const headerBtn = getHeaderInputBtn("Return to expression");
+    document.querySelector(".input-messages").append(headerBtn);
+    headerBtn.addEventListener("click", () => {
+      expView.style.transform = `translate(${0}px,${0}px)`;
+      expView.lastElementChild.remove();
+      headerBtn.remove()
+      number_output.result = null
+    });
+
+    const result = document.createElement("p");
+    
+    const calculatedResult = calculate(number_output.numbers);
+    if (typeof calculatedResult === "object") {
+      document
+        .querySelector(".input-messages")
+        .append(getErrorMessageElement(calculatedResult.err));
+    } else {
+      number_output.result = calculatedResult;
+      result.textContent = number_output.result;
+      expView.append(result);
+      expView.style.transform = `translate(${0}px,${-30}px)`;
     }
-  })
-}
+  });
+};
 
 toolboxHandler();
 keyboardHandler();
@@ -203,9 +239,9 @@ clearHandler();
 paranthesesHandler();
 dotHandler();
 toolboxBtnHandler();
-equalBtnHandler()
+equalBtnHandler();
 
-number_output.addCharacter('')
+number_output.addCharacter("");
 number_output.wheelScroll();
 number_output.mobileSelection();
 number_output.mouseSelection();
