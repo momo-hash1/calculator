@@ -86,8 +86,7 @@ main{
 
 .exp-nums{
     transition: transform .5s ease;
-    word-break: keep-all;
-    white-space: nowrap;
+    display: flex;
     position: relative;
 }
 
@@ -99,6 +98,8 @@ main{
 .exp-num-view{
     overflow: hidden;    
     transition: transform .5s ease-in-out;
+    display: flex;
+    justify-content: center;
 }
 .exp-num-view>p{
     font-family: 'Source Code Pro', monospace;
