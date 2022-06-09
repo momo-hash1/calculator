@@ -2,6 +2,11 @@ const NUM_VIEW = document.querySelector(".exp-nums");
 const AMOUNT_SHOWED_CHARS = 7;
 const LEFT_DIR = "left_dir";
 const RIGHT_DIR = "right_dir";
+const WIDTH_OF_CHAR = 27
+
+const resolveDirection = (delta) => {
+  return delta > 0 ? LEFT_DIR : RIGHT_DIR;
+};
 
 const getNumOutput = () => {
   return {
@@ -28,12 +33,12 @@ const getNumOutput = () => {
       });
     },
 
-    scroll(direction) {
+    scroll(direction, offset) {
       const maxOffset = this.expression.length - AMOUNT_SHOWED_CHARS;
       if (direction === LEFT_DIR && this.scrollOffset > 0) {
-        this.scrollOffset -= 1;
+        this.scrollOffset -= offset;
       } else if (direction === RIGHT_DIR && this.scrollOffset < maxOffset) {
-        this.scrollOffset += 1;
+        this.scrollOffset += offset;
       }
       this.renderExpression(this.getTruncatedExp())
     },
@@ -47,20 +52,30 @@ const getNumOutput = () => {
       this.renderExpression(showedExpression);
     },
     mouseScroll() {
-      const resolveDirection = (delta) => {
-        return delta > 0 ? LEFT_DIR : RIGHT_DIR;
-      };
-
       NUM_VIEW.addEventListener("wheel", (e) => {
-        this.scroll(resolveDirection(e.deltaY));
+        this.scroll(resolveDirection(e.deltaY), 1);
       });
     },
+    swipeScroll(){
+      let prevPos = 0
+      let prevAmount = 0
+      document.querySelector('.exp-wrapper').addEventListener('touchstart', (e) => {
+        prevPos = e.touches[0].clientX
 
-    getWidthOffset() {
-      return -(this.scrollOffset - 1) * WIDTH_OF_CHAR;
-    },
-    setTranslate(x) {
-      NUM_VIEW.style.transform = `translateX(${x}px)`;
+        e.target.addEventListener('touchmove', (e) => {
+          let currPos = e.touches[0].clientX
+          let currAmount = Math.round((prevPos-currPos)/WIDTH_OF_CHAR)
+          diffPrev = prevAmount - currAmount
+
+          this.scroll(resolveDirection(diffPrev), Math.abs(diffPrev))
+
+          prevAmount = currAmount
+        })
+        e.target.addEventListener('touchend', () => {
+          prevAmount = 0
+          prevPos = 0
+        })
+      })
     },
     getTruncatedExp(){
       return this.expression.slice(this.scrollOffset, this.scrollOffset+AMOUNT_SHOWED_CHARS);

@@ -171,3 +171,4 @@ equalBtnHandler();
 // number_output.mobileSelection();
 // number_output.mouseSelection();
 number_output.mouseScroll()
+number_output.swipeScroll()
