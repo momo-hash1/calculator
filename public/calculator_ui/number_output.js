@@ -22,7 +22,7 @@ const getNumOutput = () => {
           this.expression.slice(0, this.cursorPosition) +
           char +
           this.expression.slice(this.cursorPosition, this.expression.length);
-        this.scrollOffset += 1;
+        this.scrollOffset = 1;
         this.renderExpression(this.getTruncatedExp());
       }
     },
@@ -38,27 +38,39 @@ const getNumOutput = () => {
       const cursor = getCursor();
       const exp_num_view = document.querySelector(".exp-num-view");
 
-      const appendCursorAfterNumView = () => {
-        if (exp_num_view.children.length === 1) {
+      const appendCursor = () => {
+        exp_num_view.lastChild.className !== "cursor" &&
           exp_num_view.append(cursor);
-        } else {
-          cursor.remove();
-        }
+
+        exp_num_view.firstChild.className === "cursor" &&
+          exp_num_view.firstChild.remove();
       };
-      actualCurPos === AMOUNT_SHOWED_CHARS && appendCursorAfterNumView();
-      this.cursorPosition === null && appendCursorAfterNumView();
+      const prependCursor = () => {
+        exp_num_view.firstChild.className !== "cursor" &&
+          exp_num_view.prepend(cursor);
+
+        exp_num_view.lastChild.className === "cursor" &&
+          exp_num_view.lastChild.remove();
+      };
+
+      actualCurPos >= AMOUNT_SHOWED_CHARS && appendCursor();
+      actualCurPos < 0 && prependCursor();
+
+      this.cursorPosition === null && appendCursor();
 
       expression.split("").forEach((char, index) => {
         if (index === actualCurPos && this.cursorPosition !== null) {
           NUM_VIEW.append(getCursor());
-          if (exp_num_view.children.length !== 1) {
-            exp_num_view.lastChild.remove();
-          }
+          exp_num_view.childNodes.forEach(
+            (child) => child.className === "cursor" && child.remove()
+          );
         }
         const charEl = document.createElement("p");
         charEl.textContent = char;
         NUM_VIEW.append(charEl);
       });
+
+      console.log(actualCurPos);
     },
 
     scroll(direction, offset) {

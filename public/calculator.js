@@ -1,7 +1,7 @@
 import calculate from "./calculate/calculate";
 import getNumOutput from "./calculator_ui/number_output";
 
-const number_output = getNumOutput()
+const number_output = getNumOutput();
 
 const toolboxHandler = () => {
   const toolbox_btn = document.querySelector(".trig-btn");
@@ -30,7 +30,7 @@ const checkResultAndReplace = () => {
     expView.style.transform = `translate(${0}px,${0}px)`;
     expView.lastElementChild.remove();
 
-    document.querySelector(".input-messages").innerHTML = ''
+    document.querySelector(".input-messages").innerHTML = "";
   }
 };
 const keyboardHandler = () => {
@@ -41,7 +41,7 @@ const keyboardHandler = () => {
     });
   });
 };
- 
+
 const operationsHandler = () => {
   document.querySelectorAll(".op-btn").forEach((button) => {
     button.addEventListener("click", () => {
@@ -65,18 +65,8 @@ const paranthesesHandler = () => {
   document.querySelectorAll(".pr-btn").forEach((button) => {
     button.addEventListener("click", () => {
       const selection = window.getSelection().toString();
-      if (selection.length === 0) {
-        number_output.addCharacter(button.textContent);
-      } else {
-        const selectionText = selection.trim();
-        const wrappedText = "(" + selectionText + ")";
-        number_output.numbers = number_output.numbers.replace(
-          selectionText,
-          wrappedText
-        );
 
-        number_output.number_view.textContent = number_output.numbers;
-      }
+      number_output.addCharacter(button.textContent);
     });
   });
 };
@@ -96,7 +86,7 @@ const dotHandler = () => {
   };
   document.querySelector(".dot-btn").addEventListener("click", () => {
     checkResultAndReplace();
-    const nearExp = findNearestExpression(number_output.numbers);
+    const nearExp = findNearestExpression(number_output.expression);
     if (!nearExp.includes(".") && nearExp.length !== 0) {
       number_output.addCharacter(".");
     }
@@ -117,19 +107,18 @@ const getHeaderInput = (message) => {
 };
 const getErrorMessageElement = (message) => {
   const element = getHeaderInput(message);
-  element.classList.add("error-message")
+  element.classList.add("error-message");
   return element;
 };
 
 const getHeaderInputBtn = (message) => {
   const element = getHeaderInput(message);
-  element.classList.add("input-up-btn")
+  element.classList.add("input-up-btn");
   return element;
 };
 
 const equalBtnHandler = () => {
   document.querySelector(".equality").addEventListener("click", () => {
-    console.log(number_output );
     const expView = document.querySelector(".exp-num-view");
 
     const headerBtn = getHeaderInputBtn("Return to expression");
@@ -137,13 +126,13 @@ const equalBtnHandler = () => {
     headerBtn.addEventListener("click", () => {
       expView.style.transform = `translate(${0}px,${0}px)`;
       expView.lastElementChild.remove();
-      headerBtn.remove()
-      number_output.result = null
+      headerBtn.remove();
+      number_output.result = null;
     });
 
     const result = document.createElement("p");
-    
-    const calculatedResult = calculate(number_output.numbers);
+
+    const calculatedResult = calculate(number_output.expression);
     if (typeof calculatedResult === "object") {
       document
         .querySelector(".input-messages")
@@ -170,6 +159,6 @@ equalBtnHandler();
 // number_output.wheelScroll();
 // number_output.mobileSelection();
 // number_output.mouseSelection();
-number_output.mouseScroll()
-number_output.swipeScroll()
-number_output.setCursor()
+number_output.mouseScroll();
+number_output.swipeScroll();
+number_output.setCursor();
