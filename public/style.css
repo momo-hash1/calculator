@@ -215,8 +215,6 @@ main{
     cursor: pointer;
 }
 
-.animation{}
-
 .input-up-btn{
     color: #fff;
     cursor: pointer;
@@ -232,4 +230,20 @@ main{
     color: #FF5733;
     margin-bottom: 4px;
 
+}
+
+.cursor{
+    display: block;
+    width: 2px;
+    height: 65px;
+    top: 0;
+    left: 47px;
+    background: #fff;
+    animation: blink 1s linear infinite;
+}
+
+@keyframes blink {
+    50%{
+        opacity: 0;
+    }
 }

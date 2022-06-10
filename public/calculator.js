@@ -172,3 +172,4 @@ equalBtnHandler();
 // number_output.mouseSelection();
 number_output.mouseScroll()
 number_output.swipeScroll()
+number_output.setCursor()
