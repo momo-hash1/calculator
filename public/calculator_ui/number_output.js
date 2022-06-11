@@ -13,7 +13,21 @@ const getNumOutput = () => {
     expression: "",
     scrollOffset: 0,
     cursorPosition: null,
+    scrollWhenHide(){
+      if (
+        (this.cursorPosition < this.scrollOffset &&
+          this.cursorPosition > 0) ||
+        this.cursorPosition > this.scrollOffset + AMOUNT_SHOWED_CHARS
+      ) {
+        this.scrollOffset = this.cursorPosition - 4;
+      }
+    },
     addCharacter(char) {
+      const scrollWhenOverflow = () => {
+        if (this.expression.length > AMOUNT_SHOWED_CHARS) {
+          this.scrollOffset += char.length;
+        }
+      };
       if (this.cursorPosition === null) {
         this.expression += char;
         this.returnToStart();
@@ -22,15 +36,13 @@ const getNumOutput = () => {
           this.expression.slice(0, this.cursorPosition) +
           char +
           this.expression.slice(this.cursorPosition, this.expression.length);
-        if (this.expression.length > AMOUNT_SHOWED_CHARS) {
-          this.scrollOffset += char.length;
-        }
+        scrollWhenOverflow();
+        this.scrollWhenHide();
         this.renderExpression(this.getTruncatedExp());
       }
     },
     removeCharacter() {
-      console.log(this.cursorPosition)
-
+      console.log(this.cursorPosition);
       if (this.cursorPosition === null) {
         this.expression = this.expression.slice(0, -1);
         this.returnToStart();
@@ -38,10 +50,16 @@ const getNumOutput = () => {
         this.expression =
           this.expression.slice(0, this.cursorPosition - 1) +
           this.expression.slice(this.cursorPosition);
-        this.cursorPosition -= 1;
-          if (this.cursorPosition === 0) {
-            this.cursorPosition = null;
-          }
+        if (this.cursorPosition > 0) {
+          this.cursorPosition -= 1;
+        }
+        if (this.scrollOffset > 0) {
+          this.scrollOffset -= 1;
+        }
+        if (this.cursorPosition === 0) {
+          this.cursorPosition = null
+        }
+        this.scrollWhenHide()
         this.renderExpression(this.getTruncatedExp());
       }
     },
@@ -63,6 +81,9 @@ const getNumOutput = () => {
         charEl.textContent = char;
         NUM_VIEW.append(charEl);
       });
+      if (actualCurPos === expression.length && this.cursorPosition !== null) {
+        NUM_VIEW.append(getCursor())
+      }
     },
 
     scroll(direction, offset) {
