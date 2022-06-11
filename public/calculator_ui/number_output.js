@@ -13,12 +13,11 @@ const getNumOutput = () => {
     expression: "",
     scrollOffset: 0,
     cursorPosition: null,
-    scrollWhenHide(){
-      if (
-        (this.cursorPosition < this.scrollOffset &&
-          this.cursorPosition > 0) ||
-        this.cursorPosition > this.scrollOffset + AMOUNT_SHOWED_CHARS
-      ) {
+    scrollWhenHide() {
+      if (this.cursorPosition < this.scrollOffset && this.cursorPosition > 0) {
+        this.scrollOffset = this.cursorPosition - 4;
+      }
+      else if (this.cursorPosition > this.scrollOffset + AMOUNT_SHOWED_CHARS) {
         this.scrollOffset = this.cursorPosition - 4;
       }
     },
@@ -57,13 +56,14 @@ const getNumOutput = () => {
           this.scrollOffset -= 1;
         }
         if (this.cursorPosition === 0) {
-          this.cursorPosition = null
+          this.cursorPosition = null;
         }
-        this.scrollWhenHide()
+        this.scrollWhenHide();
         this.renderExpression(this.getTruncatedExp());
       }
     },
     renderExpression(expression) {
+      this.renderCursorInfo();
       const getCursor = () => {
         const cursor = document.createElement("div");
         cursor.classList.add("_cursor");
@@ -82,7 +82,7 @@ const getNumOutput = () => {
         NUM_VIEW.append(charEl);
       });
       if (actualCurPos === expression.length && this.cursorPosition !== null) {
-        NUM_VIEW.append(getCursor())
+        NUM_VIEW.append(getCursor());
       }
     },
 
@@ -148,7 +148,6 @@ const getNumOutput = () => {
         }
 
         this.cursorPosition += this.scrollOffset;
-
         this.renderExpression(this.getTruncatedExp());
       });
     },
@@ -157,6 +156,12 @@ const getNumOutput = () => {
         this.scrollOffset,
         this.scrollOffset + AMOUNT_SHOWED_CHARS
       );
+    },
+    renderCursorInfo() {
+      const curindx = this.cursorPosition === null ? 0 : this.cursorPosition;
+      document.querySelector(
+        ".cursor-info"
+      ).textContent = `Cursor: ${curindx}/${this.expression.length}`;
     },
   };
 };
