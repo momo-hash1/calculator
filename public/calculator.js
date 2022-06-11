@@ -57,7 +57,7 @@ const operationsHandler = () => {
 const clearHandler = () => {
   document.querySelector(".clear").addEventListener("click", () => {
     checkResultAndReplace();
-    number_output.removeLastCharacter();
+    number_output.removeCharacter();
   });
 };
 

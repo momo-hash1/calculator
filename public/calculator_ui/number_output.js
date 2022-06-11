@@ -22,55 +22,47 @@ const getNumOutput = () => {
           this.expression.slice(0, this.cursorPosition) +
           char +
           this.expression.slice(this.cursorPosition, this.expression.length);
-        this.scrollOffset = 1;
+        if (this.expression.length > AMOUNT_SHOWED_CHARS) {
+          this.scrollOffset += char.length;
+        }
+        this.renderExpression(this.getTruncatedExp());
+      }
+    },
+    removeCharacter() {
+      console.log(this.cursorPosition)
+
+      if (this.cursorPosition === null) {
+        this.expression = this.expression.slice(0, -1);
+        this.returnToStart();
+      } else if (this.cursorPosition > 0) {
+        this.expression =
+          this.expression.slice(0, this.cursorPosition - 1) +
+          this.expression.slice(this.cursorPosition);
+        this.cursorPosition -= 1;
+          if (this.cursorPosition === 0) {
+            this.cursorPosition = null;
+          }
         this.renderExpression(this.getTruncatedExp());
       }
     },
     renderExpression(expression) {
       const getCursor = () => {
         const cursor = document.createElement("div");
-        cursor.classList.add("cursor");
+        cursor.classList.add("_cursor");
         return cursor;
       };
 
       NUM_VIEW.innerHTML = "";
       const actualCurPos = this.cursorPosition - this.scrollOffset;
-      const cursor = getCursor();
-      const exp_num_view = document.querySelector(".exp-num-view");
-
-      const appendCursor = () => {
-        exp_num_view.lastChild.className !== "cursor" &&
-          exp_num_view.append(cursor);
-
-        exp_num_view.firstChild.className === "cursor" &&
-          exp_num_view.firstChild.remove();
-      };
-      const prependCursor = () => {
-        exp_num_view.firstChild.className !== "cursor" &&
-          exp_num_view.prepend(cursor);
-
-        exp_num_view.lastChild.className === "cursor" &&
-          exp_num_view.lastChild.remove();
-      };
-
-      actualCurPos >= AMOUNT_SHOWED_CHARS && appendCursor();
-      actualCurPos < 0 && prependCursor();
-
-      this.cursorPosition === null && appendCursor();
 
       expression.split("").forEach((char, index) => {
         if (index === actualCurPos && this.cursorPosition !== null) {
           NUM_VIEW.append(getCursor());
-          exp_num_view.childNodes.forEach(
-            (child) => child.className === "cursor" && child.remove()
-          );
         }
         const charEl = document.createElement("p");
         charEl.textContent = char;
         NUM_VIEW.append(charEl);
       });
-
-      console.log(actualCurPos);
     },
 
     scroll(direction, offset) {

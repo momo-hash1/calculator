@@ -232,7 +232,7 @@ main{
 
 }
 
-.cursor{
+._cursor{
     display: block;
     width: 2px;
     height: 65px;
