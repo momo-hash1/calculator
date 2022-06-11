@@ -96,6 +96,7 @@ const getNumOutput = () => {
       this.renderExpression(this.getTruncatedExp());
     },
     returnToStart() {
+      console.log(this.expression.length);
       const checkLength = this.expression.length < AMOUNT_SHOWED_CHARS;
       let showedExpression = this.expression;
       if (!checkLength) {
@@ -154,7 +155,7 @@ const getNumOutput = () => {
     getTruncatedExp() {
       return this.expression.slice(
         this.scrollOffset,
-        this.scrollOffset + AMOUNT_SHOWED_CHARS
+        this.scrollOffset + AMOUNT_SHOWED_CHARS+1
       );
     },
     renderCursorInfo() {

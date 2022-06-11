@@ -1,5 +1,5 @@
 import calculate from "./calculate/calculate";
-import getNumOutput from "./calculator_ui/number_output";
+import getNumOutput from "./number_output";
 
 const number_output = getNumOutput();
 
@@ -20,23 +20,9 @@ const toolboxHandler = () => {
   });
 };
 
-const checkResultAndReplace = () => {
-  if (typeof number_output.result === "number") {
-    const expView = document.querySelector(".exp-num-view");
-
-    number_output.numbers = number_output.result.toString();
-    number_output.result = null;
-
-    expView.style.transform = `translate(${0}px,${0}px)`;
-    expView.lastElementChild.remove();
-
-    document.querySelector(".input-messages").innerHTML = "";
-  }
-};
 const keyboardHandler = () => {
   document.querySelectorAll(".num-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      checkResultAndReplace();
       number_output.addCharacter(button.textContent);
     });
   });
@@ -45,8 +31,7 @@ const keyboardHandler = () => {
 const operationsHandler = () => {
   document.querySelectorAll(".op-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      checkResultAndReplace();
-      const prevChar = number_output.numbers.at(-1);
+      const prevChar = number_output.expression.at(-1);
       if (!isNaN(parseInt(prevChar)) || prevChar === "(" || prevChar === ")") {
         number_output.addCharacter(button.textContent);
       }
@@ -56,7 +41,6 @@ const operationsHandler = () => {
 
 const clearHandler = () => {
   document.querySelector(".clear").addEventListener("click", () => {
-    checkResultAndReplace();
     number_output.removeCharacter();
   });
 };
@@ -64,8 +48,6 @@ const clearHandler = () => {
 const paranthesesHandler = () => {
   document.querySelectorAll(".pr-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      const selection = window.getSelection().toString();
-
       number_output.addCharacter(button.textContent);
     });
   });
@@ -85,7 +67,6 @@ const dotHandler = () => {
     return resExp;
   };
   document.querySelector(".dot-btn").addEventListener("click", () => {
-    checkResultAndReplace();
     const nearExp = findNearestExpression(number_output.expression);
     if (!nearExp.includes(".") && nearExp.length !== 0) {
       number_output.addCharacter(".");
@@ -119,29 +100,29 @@ const getHeaderInputBtn = (message) => {
 
 const equalBtnHandler = () => {
   document.querySelector(".equality").addEventListener("click", () => {
-    const expView = document.querySelector(".exp-num-view");
+    const prevExp = number_output.expression
+    const headerBtn = getHeaderInputBtn(prevExp);
 
-    const headerBtn = getHeaderInputBtn("Return to expression");
-    document.querySelector(".input-messages").append(headerBtn);
+
     headerBtn.addEventListener("click", () => {
-      expView.style.transform = `translate(${0}px,${0}px)`;
-      expView.lastElementChild.remove();
       headerBtn.remove();
-      number_output.result = null;
+      number_output.expression = prevExp
+      number_output.renderExpression(number_output.getTruncatedExp())
     });
 
-    const result = document.createElement("p");
-
     const calculatedResult = calculate(number_output.expression);
+
     if (typeof calculatedResult === "object") {
-      document
-        .querySelector(".input-messages")
-        .append(getErrorMessageElement(calculatedResult.err));
+      // document
+      //   .querySelector(".input-messages")
+      //   .append(getErrorMessageElement(calculatedResult.err));
+      alert(calculatedResult.err)
     } else {
-      number_output.result = calculatedResult;
-      result.textContent = number_output.result;
-      expView.append(result);
-      expView.style.transform = `translate(${0}px,${-30}px)`;
+      document.querySelector(".input-messages").append(headerBtn);
+      number_output.expression = `${calculate(number_output.expression)}`
+      number_output.scrollOffset = 0
+      number_output.cursorPosition = null
+      number_output.renderExpression(number_output.expression)
     }
   });
 };
@@ -155,10 +136,7 @@ dotHandler();
 toolboxBtnHandler();
 equalBtnHandler();
 
-// number_output.addCharacter("");
-// number_output.wheelScroll();
-// number_output.mobileSelection();
-// number_output.mouseSelection();
+
 number_output.mouseScroll();
 number_output.swipeScroll();
 number_output.setCursor();
