@@ -22,9 +22,9 @@
     />
   </head>
   <body>
-    <main>
+    <div class="calculator-body">
       <div class="calculator">
-        <div class="input">
+        <div class="numbers-output">
           <p class="input-header">Calculator</p>
           <div>
             <div class="input-messages">
@@ -33,14 +33,6 @@
             </div>
             <div class="input-main">
               <div class="exp-view">
-                <div class="exp-wrapper">
-                  <div class="exp-numbers">
-                    <div class="exp-num-view">
-                      <div class="exp-nums">
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div class="exp-background"></div>
               </div>
               <div class="clear-wrapper">
@@ -58,31 +50,42 @@
               <button class="btn expanded-btn trig-btn">functions</button>
               <button class="btn header-btn pr-btn">(</button>
               <button class="btn header-btn pr-btn">)</button>
-              <button class="btn expanded-btn clear equality">
-                =
-              </button>
+              <button class="btn expanded-btn clear equality">=</button>
             </div>
             <div class="keyboard-main">
               <button class="btn button-main">7</button>
               <button class="btn button-main">8</button>
               <button class="btn button-main">9</button>
-              <button class="btn button-main">/</button>
               <button class="btn button-main">4</button>
               <button class="btn button-main">5</button>
               <button class="btn button-main">6</button>
-              <button class="btn button-main">*</button>
               <button class="btn button-main">1</button>
               <button class="btn button-main">2</button>
               <button class="btn button-main">4</button>
-              <button class="btn button-main">-</button>
               <button class="btn button-main expand">.</button>
               <button class="btn button-main">0</button>
-              <button class="btn button-main">+</button>
+              <div class="binary-operators-wrapper">
+                <div class="binary-operators">
+                  <button class="btn button-main">/</button>
+                  <button class="btn button-main">-</button>
+                  <button class="btn button-main">*</button>
+                  <button class="btn button-main">+</button>
+                </div>
+              </div>
+              <div class="binary-ops-wrapper">
+                <div class="binary-ops-progress">
+                  <div class="active"></div>
+                  <div class="active"></div>
+                  <div class="active"></div>
+                  <div class="active"></div>
+                  <div></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
 
     <div class="fun-toolbox">
       <ul class="toolbox-list">
@@ -103,5 +106,5 @@
       </ul>
     </div>
     <script src="./calculator.js" type="module"></script>
-  </body> 
+  </body>
 </html>
